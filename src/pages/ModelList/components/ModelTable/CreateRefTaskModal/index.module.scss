@@ -1,0 +1,25 @@
+.titleWrap {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+  justify-content: center;
+  // font-weight: 700;
+  .titleContainer{
+    width: 100%;
+    padding: 10px;
+    // border: 1px solid #efefef;
+    border-radius: 5px;
+    .titleType{
+      font-size: 16px;
+      color: #1890ff;
+      // background-color: #f5f5f5;
+      border-radius: 5px 5px 0 0;
+      font-weight: 700;
+      margin-right: 10px;
+    }
+    .typeValue{
+      font-size: 16px;
+      color: #333;
+    }
+  }
+}

@@ -1,0 +1,22 @@
+.swiperImg {
+  width: 150px;
+  height: 95px;
+  cursor: pointer;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.divider {
+  position: absolute;
+  display: inline-block;
+  margin-right: 2px;
+  left: 100%;
+  transform: translateX(-50%);
+  width: 5px; /* Adjust the width as needed */
+  height: 100%; /* Adjust the height as needed */
+  background-color: green; /* Adjust the color as needed */
+}

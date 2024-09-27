@@ -1,0 +1,56 @@
+.titleWrap {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 470px;
+  padding-top: 140px;
+  // background-image: linear-gradient(to top, #1b98ff 0%, #0e4a7b 100%);
+  flex-direction: column;
+  .title {
+    flex: 1;
+    font-weight: 500;
+    font-size: 24px;
+    text-align: center;
+  }
+}
+.projectsWrap {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.filterWrap {
+  width: 95%;
+  margin-bottom: -10px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  .filterContainer {
+    display: flex;
+    align-items: center;
+    width: 18%;
+    .filterTitle{
+      width: 40%;
+      height: 32px;
+      line-height: 32px;
+      text-align: center;
+    }
+    .filterSelect{
+      width: 100px;
+      height: 32px;
+    }
+  }
+  .filterButtonContainer{
+    margin-left: 30px;
+    width: 10%;
+  }
+}
+
+.customSelect{
+  :global{
+    .ant-select-selector {
+      height: 60px !important;
+      padding: 9px 10px !important;
+    }
+  }
+}

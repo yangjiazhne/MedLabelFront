@@ -1,0 +1,176 @@
+.loginWrap {
+    display: flex;
+    height: calc(100vh - 60px);
+    width: 100%;
+  
+    overflow: hidden;
+    position: absolute;
+
+    top: 0;
+
+    .loginBg {
+        --offset: 20px;
+    
+        filter: blur(5px);
+        width: calc(100% + var(--offset));
+        height: calc(100% + var(--offset));
+        z-index: -1;
+        position: absolute;
+    
+        left: calc(var(--offset) * -.5);
+        top: calc(var(--offset) * -.5);
+    }
+
+    .leftText {
+        --width: 500px;
+        --height: 360px;
+        margin-right: 80px;
+        display: flex;
+        flex-direction: column;
+
+        position: absolute;
+        left: calc(30% - var(--width) * .5);
+        top: calc(55% - var(--height) * .5);
+
+        &>:nth-child(1){
+            font-size: 3em;
+            font-weight: 700;
+        }
+        &>:nth-child(2){
+            font-size: 1.4em;
+            color: rgba(0,0,0,.87);
+            margin: 15px 0;
+        }
+        &>:nth-child(3){
+            font-size: 0.8em;
+            color: lightslategray;
+        }
+    }
+    .rightPanel {
+        --width: 500px;
+        --height: 360px;
+    
+        z-index: 1;
+    
+        width: var(--width);
+        min-height: var(--height);
+    
+        position: absolute;
+        left: calc(70% - var(--width) * .5);
+        top: calc(50% - var(--height) * .5);
+    
+        background: #333b;
+    
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 40px 20px 50px 20px;
+        color: #fff;
+    
+        border-radius: 10px;
+        box-shadow: 5px 10px 5px #aaa4;
+        
+        @media(max-height: 800px) {
+          top: unset;
+          bottom: 45px;
+        }
+  
+        .title {
+          font-weight: 700;
+          color: #fff;
+          font-size: 1.7rem;
+          margin-bottom: 15px;
+    
+          letter-spacing: 20px;
+          width: 100%;
+          text-align: center;
+        }
+    
+        .formInputItem {  // 表单输入组件
+          display: flex;
+          height: 40px;
+          width: 100%;
+    
+          border-bottom: 2px solid #fff;
+          align-items: center;
+          margin: 15px auto;
+    
+          &> .antFormItem {
+            flex: 1;
+            margin: 0;
+            & *{
+              width: 100%;
+            }
+            & input {
+              background: transparent;
+              caret-color: #fff;
+              color: #fff;
+    
+              border: none;
+              outline: none;
+              appearance: none;
+              box-shadow: none;
+    
+              &:hover {
+                background: transparent;
+              }
+            }
+          }
+    
+          &> span {
+            width: 60px;
+            color: #fff;
+          }
+    
+          &> button {
+            width: 100px;
+            border: none;
+            background: transparent;
+          }
+        }
+    
+        .formBtnItem {  // 表单按键组件
+          display: flex;
+          height: 40px;
+          width: 100%;
+    
+          margin: 15px auto;
+          .subBtn {
+            width: 100px;
+          }
+    
+          &> * {
+            display: block;
+            height: 100%;
+    
+            margin: 0 5px;
+          }
+        }
+    
+        .formBlankItem {
+          display: block;
+          height: 20px;
+          width: 100%;
+        }
+    }
+}
+
+.customForm{
+  :global{
+    .ant-form-item {
+      display: flex;
+      align-items: center;
+      .ant-form-item-control {
+        flex: 1;
+        position: relative;
+      }
+      
+      .ant-form-item-explain {
+        position: absolute;
+        left: 53%;
+        bottom: 4px;
+        white-space: nowrap;
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+.titleWrap {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 40px;
+  .title {
+    flex: 1;
+    font-weight: 500;
+    font-size: 24px;
+    text-align: center;
+  }
+}
+.container {
+  margin: 40px auto 20px auto;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 0 15px #ededed;
+}

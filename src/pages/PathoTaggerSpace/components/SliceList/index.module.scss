@@ -1,0 +1,151 @@
+.sliceListContainer{
+    width: 250px;
+    min-height: 400px;
+    position: absolute;
+    z-index: 9999;
+    top: 90px;
+    left: 90px; 
+    .innerContainer{
+        width:100%;
+        color: #fff;
+        height: 100%;
+        border: 1px solid #272b33;
+        background-color: #272b33;
+        padding: 5px 10px;  
+        border-radius: 5px;
+        .sliceListHeader{
+            display: flex;
+            cursor: move;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+            .sliceListTitle{
+                margin: 0;
+                font-size: 18px;
+                font-weight: 550;
+            }
+        }
+        
+        .sliceListBody{
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: nowrap;
+            overflow-x: hidden;
+            overflow-y: auto;
+            padding: 0;
+            min-height: 300px;
+            max-height: 400px; 
+            flex-direction: column;
+            .sliceItem{
+                padding: 7px;
+                margin-bottom: 2px;
+                color: #25b0e5; 
+                display: flex;
+                font-size: 14px;
+                background-color: rgba(65, 78, 95, .8);
+                cursor: pointer;
+                &:hover{
+                    background-color: rgba(65, 78, 95, .5)! important;
+                }
+            }
+        }
+        // 滚动条宽度
+        .sliceListBody::-webkit-scrollbar {
+            width: 4px;
+        }
+        // 滚动条轨道
+        .sliceListBody::-webkit-scrollbar-track {
+            background-color: #272b33;
+            border-radius: 2px;
+        }
+        // 小滑块
+        .sliceListBody::-webkit-scrollbar-thumb {
+            background-color: #414e5f;
+            border-radius: 10px;
+        }
+
+        .sliceListFoot{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #8a9aaf;
+            .sliceListFootButton{
+                text-align: center;
+                border: 1px solid #b0b0b0;
+                border-radius: 25px;
+                padding: 4px 12px;
+                cursor: pointer;
+                font-size: 13px;
+                background-color: transparent;
+                &:hover {
+                    background-color: #b0b0b0;
+                }
+            }
+        }
+    }
+  }
+
+.SearchBar{
+    :global{
+        .ant-input{
+            background-color: #3c4049;
+            color: #f0f0f0;
+        }
+        .ant-input-search .ant-input:focus, .ant-input-search .ant-input:hover {
+            border-color: #fff !important;
+        }
+        .ant-btn:focus, .ant-btn:hover {
+            border-color: #fff;
+        }
+        .ant-input-search>.ant-input-group>.ant-input-group-addon:last-child .ant-input-search-button:not(.ant-btn-primary) {
+            color: rgba(255,255,255,0.8);
+        }
+    }
+}
+
+
+.customCollapse{
+    :global{
+        .ant-collapse-item{
+            .ant-collapse-header {
+                color: #fff !important;
+            }
+            .ant-collapse-content{
+                .ant-collapse-content-box{
+                    padding: 0 !important;
+                }
+            }
+
+        }
+    }
+} 
+
+.disabledButton{
+    :global{
+        .ant-btn-background-ghost{
+            .ant-btn-primary[disabled]{
+                color: #f0f0f0 !important;
+            }
+            .ant-btn-primary[disabled]:active{
+                color: #f0f0f0 !important;
+            }
+            .ant-btn-primary[disabled]:hover{
+                color: #f0f0f0 !important;
+            }
+        }
+    }
+}
+
+.inputNumberControl{
+    :global{
+        .ant-input-number-handler-wrap{
+            display: none !important;
+        }
+
+        .ant-input-number-borderless{
+            .ant-input-number-handler-wrap{
+                display: none !important;
+            }
+        }
+    }
+}

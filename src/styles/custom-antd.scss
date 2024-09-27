@@ -1,0 +1,23 @@
+@import './variables.scss';
+
+.success-btn {
+  background-color: #21ba45;
+  border-color: #21ba45;
+  color: #fff;
+  &:hover {
+    background-color: #16ab39;
+    border-color: #16ab39;
+    color: #fff;
+  }
+}
+
+.teal-btn {
+  background-color: $teal;
+  border-color: $teal;
+  color: #fff;
+  &:hover {
+    background-color: #00ada5;
+    border-color: #00ada5;
+    color: #fff;
+  }
+}

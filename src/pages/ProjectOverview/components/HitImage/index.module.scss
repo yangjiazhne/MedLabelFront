@@ -1,0 +1,25 @@
+.container {
+  margin: 0 15px 15px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  box-shadow: 5px 5px 5px #efefef;
+  border-radius: 5px;
+  // width: 10%;
+  .imgWrap {
+     width: 150px;
+     height: 150px;
+    // width: 100%;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .copyBtn {
+    color: #40a9ff;
+    cursor: pointer;
+    margin-left: 5px;
+  }
+}

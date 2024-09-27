@@ -1,0 +1,185 @@
+.container {
+  display: flex;
+  width : 100vw;
+  height: 100vh;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+
+  .tagBox {
+    width: 250px;
+    min-height: 400px;
+    position: absolute;
+    z-index: 9999;
+    top: 90px;
+    left: 90px; 
+  }
+
+  .SliceBox{
+    width: 250px;
+    min-height: 400px;
+    position: absolute;
+    z-index: 9999;
+    top: 90px;
+    left: 90px; 
+  }
+
+  .infoContainer {
+    z-index: 9999;
+    width: 100%;
+    // height: 140px;
+    border: 1px solid #e8e8e8;
+    // background-color: red;
+    padding: 8px 12px;
+  }
+
+  .viewerContainer {
+    width: calc(100% - 300px);
+    height: 100%;
+    flex-grow: 1;
+    // display: flex;
+    // justify-content: center;
+    // align-items: center;
+  }
+}
+
+.biaozhu{
+  right: 15px;
+  position: absolute;
+  top: calc(50vh - 195px);
+  z-index: 5;
+
+  .biaozhuButton{
+    width: 46px;
+    height: 46px;
+    line-height: 46px;
+    text-align: center;
+    background-color: rgba(40, 49, 66, .6);
+    display: inline-block;
+    border-radius: 50%;
+    cursor: pointer;
+    vertical-align: top;
+  }
+}
+
+.sliceList{
+  left: 15px;
+  position: absolute;
+  top: calc(50vh - 145px);
+  z-index: 5;
+  .sliceListButton{
+    width: 46px;
+    height: 46px;
+    line-height: 46px;
+    text-align: center;
+    background-color: rgba(40, 49, 66, .6);
+    display: inline-block;
+    margin-right: 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    vertical-align: top;
+  }
+}
+
+.morePop{
+  :global{
+    .ant-popover-content{
+      .ant-popover-arrow{
+        border-color: transparent transparent #272b33 #272b33 !important;
+      }
+    }
+    .ant-popover-inner-content{
+      padding: 0;
+    }
+  }
+}
+
+.moreListIcon{
+  padding: 10px 15px;
+  background-color: #272b33;
+  cursor: pointer;
+  &:hover{
+    background-color: #354052;
+  }
+}
+.moreListIcon:hover{
+  background-color: #354052;
+}
+
+.moreList{
+  left: 15px;
+  position: absolute;
+  top: calc(50vh - 245px);
+  z-index: 5;
+  .moreListButton{
+    width: 46px;
+    height: 46px;
+    line-height: 46px;
+    text-align: center;
+    background-color: rgba(40, 49, 66, .6);
+    display: inline-block;
+    margin-right: 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    vertical-align: top;
+  }
+}
+
+.sliceInfo{
+  left: 15px;
+  position: absolute;
+  top: calc(50vh - 195px);
+  z-index: 5;
+  .sliceInfoButton{
+    width: 46px;
+    height: 46px;
+    line-height: 46px;
+    text-align: center;
+    background-color: rgba(40, 49, 66, .6);
+    display: inline-block;
+    margin-right: 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    vertical-align: top;
+  }
+}
+
+.emptyPage {
+  display: flex;
+  flex-direction: column;
+  // justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  font-size: 24px;
+  color: #666;
+}
+
+.convertProgress{
+  left: 200px;
+  position: absolute;
+  top: 10px;
+  z-index: 9000;
+  border-radius: 24px;
+  padding: 10px 20px 10px 20px;
+  background-color: rgba(40,49,66,.6);
+  color: #cddeed;
+}
+
+.annotionList{
+  right: 15px;
+  position: absolute;
+  top: calc(50vh - 245px);
+  z-index: 5;
+  .annotionListButton{
+    width: 46px;
+    height: 46px;
+    line-height: 46px;
+    text-align: center;
+    background-color: rgba(40, 49, 66, .6);
+    display: inline-block;
+    border-radius: 50%;
+    cursor: pointer;
+    vertical-align: top;
+  }
+}

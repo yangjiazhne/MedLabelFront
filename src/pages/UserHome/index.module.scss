@@ -1,0 +1,43 @@
+@import '@/styles/variables.scss';
+
+.userHomeContainer {
+  display: flex;
+}
+.leftWrap {
+  width: 200px;
+  border-right: 1px solid #ccc;
+  text-align: center;
+  .icon {
+    color: $blue;
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  .leftButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  .username {
+    height: 150px;
+  }
+  .link {
+    padding: 10px 0;
+    &:hover {
+      background: #f2f2f2;
+      cursor: pointer;
+    }
+  }
+  .linkWrap {
+    border-top: 1px solid #ccc;
+    padding: 20px 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .linkTitle {
+      font-weight: 500;
+      font-size: 18px;
+    }
+  }
+}

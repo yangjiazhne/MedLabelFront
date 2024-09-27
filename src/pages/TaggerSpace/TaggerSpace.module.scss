@@ -1,0 +1,149 @@
+.noItems {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.container {
+  display: flex;
+  justify-content: space-around;
+  overflow: hidden;
+  position: relative;
+  background-color: #616161;
+}
+
+.leftContainer {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  width: 13%;
+  box-shadow: 0 0 3px #d4d4d5;
+  // margin-right: 7px;
+  background-color: #363636;
+}
+
+.rightContainer{
+  width: 5%;
+  box-shadow: 0 0 3px #d4d4d5;
+  // margin-left: 7px;
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #363636;
+}
+
+.biaozhu{
+  // left: 15px;
+  // position: absolute;
+  // top: calc(50vh-95px);
+  // z-index: 9000;
+  margin-bottom: 10px;
+  .biaozhuButton{
+    width: 46px;
+    height: 46px;
+    line-height: 46px;
+    text-align: center;
+    background-color: #616161;
+    display: inline-block;
+    border-radius: 50%;
+    cursor: pointer;
+    vertical-align: top;
+  }
+}
+
+.sliceList{
+  // left: 15px;
+  // position: absolute;
+  // top: calc(50vh - 145px);
+  // z-index: 9000;
+  margin-bottom: 10px;
+  .sliceListButton{
+    width: 46px;
+    height: 46px;
+    line-height: 46px;
+    text-align: center;
+    background-color: #616161;
+    display: inline-block;
+    border-radius: 50%;
+    cursor: pointer;
+    vertical-align: top;
+  }
+}
+
+.sliceInfo{
+  // left: 15px;
+  // position: absolute;
+  // top: calc(50vh - 195px);
+  // z-index: 9000;
+  margin-bottom: 10px;
+  .sliceInfoButton{
+    width: 46px;
+    height: 46px;
+    line-height: 46px;
+    text-align: center;
+    background-color: #616161;
+    display: inline-block;
+    border-radius: 50%;
+    cursor: pointer;
+    vertical-align: top;
+  }
+}
+
+.morePop{
+  :global{
+    .ant-popover-content{
+      .ant-popover-arrow{
+        border-color: transparent transparent #272b33 #272b33 !important;
+      }
+    }
+    .ant-popover-inner-content{
+      padding: 0;
+    }
+  }
+}
+
+.moreListIcon{
+  padding: 10px 15px;
+  background-color: #272b33;
+  cursor: pointer;
+  &:hover{
+    background-color: #354052;
+  }
+}
+.moreListIcon:hover{
+  background-color: #354052;
+}
+
+.moreList{
+  // left: 15px;
+  // position: absolute;
+  // top: calc(50vh - 245px);
+  // z-index: 9000;
+  margin-bottom: 10px;
+  .moreListButton{
+    width: 46px;
+    height: 46px;
+    line-height: 46px;
+    text-align: center;
+    background-color: #616161;
+    display: inline-block;
+    border-radius: 50%;
+    cursor: pointer;
+    vertical-align: top;
+  }
+}
+
+.annotionList{
+  margin-bottom: 10px;
+  .annotionListButton{
+    width: 46px;
+    height: 46px;
+    line-height: 46px;
+    text-align: center;
+    background-color: #616161;
+    display: inline-block;
+    border-radius: 50%;
+    cursor: pointer;
+    vertical-align: top;
+  }
+}

@@ -1,0 +1,28 @@
+.fileList {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px auto;
+  background-color: #efefef;
+  border-radius: 5px;
+  padding: 5px;
+  width: 400px;
+  &:hover {
+    background-color: gray;
+    color: #fff;
+  }
+}
+.stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 40px auto;
+  .statsItem {
+    font-size: 16px;
+    font-weight: 700;
+    span {
+      font-size: 26px;
+      margin-right: 5px;
+    }
+  }
+}

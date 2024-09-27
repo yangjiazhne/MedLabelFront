@@ -1,0 +1,22 @@
+.container {
+  margin: 40px auto 20px auto;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 0 15px #ededed;
+}
+
+.imgContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.imgContainer:after {
+  content: "";
+  flex: auto;
+}
+
+.center .ant-table-cell {
+  text-align: center;
+  vertical-align: middle;
+}

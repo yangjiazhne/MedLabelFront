@@ -1,0 +1,7 @@
+.task-action {
+    font-weight: bold;
+}
+
+.task-action:hover {
+    cursor: pointer;
+}
