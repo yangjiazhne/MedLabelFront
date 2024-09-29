@@ -149,7 +149,7 @@ const PathoTaggerSpace = () => {
 
       // 获取数据集详情
       const projectRes = await searchProject(currentProjectPid)
-      if(Number(projectRes.code) === 401){
+      if(!projectRes.data){
         Modal.error({
           title: '提示',
           content: '您的登录已过期，请重新登陆',

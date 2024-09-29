@@ -277,7 +277,7 @@ const MyProjects = () =>{
     // 查询数据集
     const res = await searchProject(undefined, projectName, page, size)
 
-    if(Number(res.code) === 401){
+    if(!res.data){
       Modal.error({
         title: '提示',
         content: '您的登录已过期，请重新登陆',
