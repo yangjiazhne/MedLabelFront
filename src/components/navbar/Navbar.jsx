@@ -117,9 +117,9 @@ const Navbar = () => {
         {/*<ArrowLeftOutlined className={styles.backIcon} onClick={history.goBack} />*/}
         <div className={styles.navbarTitleWrap}>
           <span className={styles.navbarTitle}>{t("title")}</span>
-          {/* <Tooltip title="点击查看使用说明" className={styles.navbarIcon}>
-            <QuestionCircleOutlined style={{ color: '#1890ff' }} onClick={goToIntroduction} />
-          </Tooltip> */}
+          <Tooltip title="点击查看使用说明" className={styles.navbarIcon}>
+            <QuestionCircleOutlined style={{ color: '#fff' }} onClick={goToIntroduction} />
+          </Tooltip>
         </div>
       </div>
       {isLogin ? 
