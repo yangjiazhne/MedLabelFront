@@ -18,7 +18,7 @@ const fabric = window.fabric
 
 export const getCurrentResult = currentCanvas => {
   const { project } = store.getState()
-  const { boundingBoxMap } = project
+  const { boundingBoxMap, strokeWidth } = project
 
   const finalTaggerInfo = currentCanvas.getObjects().map(item => {
     const baseInfo = {
@@ -46,8 +46,8 @@ export const getCurrentResult = currentCanvas => {
         break
       case hitShapeTypes.RECT:
         const { br, tl } = item.aCoords
-        let width = br.x - tl.x
-        let height = br.y - tl.y
+        let width = (br.x - tl.x) - item.strokeWidth; 
+        let height = (br.y - tl.y) - item.strokeWidth; 
         baseInfo.points = [
           [actualLeft, actualTop],
           [actualLeft + width, actualTop],
@@ -60,8 +60,9 @@ export const getCurrentResult = currentCanvas => {
       case hitShapeTypes.POLYGONPATH:
         const polygonMatrix = item.calcTransformMatrix()
         // 获取当前polygon移动的距离
-        const polygonMoveX = polygonMatrix[4] - item.pathOffset.x,
-            polygonMoveY = polygonMatrix[5] - item.pathOffset.y
+        const polygonMoveX = polygonMatrix[4] - item.pathOffset.x + (1.5 - item.strokeWidth) / 2,   // 1.5为handler下的缩放尺度
+            polygonMoveY = polygonMatrix[5] - item.pathOffset.y + (1.5 - item.strokeWidth) / 2
+
         baseInfo.points = item.points
             .map(point => [(point.x + polygonMoveX), (point.y + polygonMoveY)])
             .map(point => [point[0] > 0 ? point[0] : 0, point[1] > 0 ? point[1] : 0])

@@ -31,14 +31,14 @@ export const zoomHandler = (event, dispatch, setZooming, setPosition) => {
   var zoom = event.zoom
   
   if (zoom) {
-    const radius = 1 / zoom
+    const radius = 1.5 / zoom
     dispatch({
       type: 'UPDATE_CIRCLERADIUS',
       payload: radius,
     })
 
     // 调整边框和自由划线的线宽
-    const strokeWidth = 1 / zoom
+    const strokeWidth = 1.5  / zoom             // 修改尺度的同时修改 MedLabel/client/src/pages/PathoTaggerSpace/help.js  的 getCurrentResult
     dispatch({
       type: 'UPDATE_STROKEWIDTH',
       payload: strokeWidth,

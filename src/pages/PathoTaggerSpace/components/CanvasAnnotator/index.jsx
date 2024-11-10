@@ -649,8 +649,8 @@ const CanvasAnnotator = ({
               <div className={styles.ActiveObjCardTagInfo}>{currentActiveObj.tagInfo}</div>
             )}
             <div>
-              <div>宽度：{(currentActiveObj.getBoundingRect().width * pathoImgInfo.size.width / 1000).toFixed(2)}px</div>
-              <div>长度：{(currentActiveObj.getBoundingRect().height * pathoImgInfo.size.width / 1000).toFixed(2)}px</div>
+              <div>宽度：{((currentActiveObj.aCoords.br.x - currentActiveObj.aCoords.tl.x - currentActiveObj.strokeWidth) * pathoImgInfo.size.width / 1000).toFixed(2)}px</div>
+              <div>长度：{((currentActiveObj.aCoords.br.y - currentActiveObj.aCoords.tl.y - currentActiveObj.strokeWidth) * pathoImgInfo.size.width / 1000).toFixed(2)}px</div>
             </div>
           </div>
         </div>}

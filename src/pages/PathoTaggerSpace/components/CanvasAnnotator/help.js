@@ -29,7 +29,7 @@ export const renderBoxMap = (boundingBox) => {
 
   if (boundingBox.length === 0 || !currentCanvas) return
   let fBoxes = []
-
+  const scaleFactor = 1
   if (Object.keys(boundingBox).length != 0)
     fBoxes = boundingBox
       ?.map((box, index) => {
@@ -62,8 +62,8 @@ export const renderBoxMap = (boundingBox) => {
           case hitShapeTypes.RECT:
             return drawRectangle({
               id,
-              beginPoint: { x: box.points[0][0], y: box.points[0][1] },
-              endPoint: { x: box.points[2][0], y: box.points[2][1] },
+              beginPoint: { x: box.points[0][0] / scaleFactor, y: box.points[0][1] / scaleFactor },
+              endPoint: { x: box.points[2][0] / scaleFactor, y: box.points[2][1] / scaleFactor },
               color,
               label: box.label,
               tagInfo: box.tagInfo,
@@ -73,8 +73,8 @@ export const renderBoxMap = (boundingBox) => {
             return drawPolygonPath({
               id,
               points: box.points.map(point => ({
-                x: point[0],
-                y: point[1],
+                x: point[0] / scaleFactor,
+                y: point[1] / scaleFactor,
               })),
               color,
               label: box.label,
@@ -85,8 +85,8 @@ export const renderBoxMap = (boundingBox) => {
             return drawPolygon({
               id,
               points: box.points.map(point => ({
-                x: point[0],
-                y: point[1],
+                x: point[0] / scaleFactor,
+                y: point[1] / scaleFactor,
               })),
               color,
               label: box.label,
@@ -110,6 +110,7 @@ export const renderBoxMap = (boundingBox) => {
     currentCanvas.renderOnAddRemove = false
 
     objects.forEach(function (o) {
+      // console.log(o)
       // 数据库中的object坐标统一都是相对于左上角(0,0)开始的，这渲染时要加上图片的偏移量
       // o.left -= sliceX
       // o.top -= sliceY

@@ -609,8 +609,8 @@ const CanvasAnnotator = ({
               <div className={styles.ActiveObjCardTagInfo}>{currentActiveObj.tagInfo}</div>
             )}
             <div>
-              <div>宽度：{(currentActiveObj.getBoundingRect().width).toFixed(2)}px</div>
-              <div>长度：{(currentActiveObj.getBoundingRect().height).toFixed(2)}px</div>
+              <div>宽度：{(currentActiveObj.width).toFixed(2)}px</div>
+              <div>长度：{(currentActiveObj.height).toFixed(2)}px</div>
             </div>
           </div>
         </div>}
