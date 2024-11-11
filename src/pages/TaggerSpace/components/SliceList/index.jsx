@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { CloseOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
+import { CloseOutlined, ExclamationCircleOutlined, CheckCircleTwoTone } from '@ant-design/icons'
 import styles from './index.module.scss'
 import { useHistory, useParams } from 'react-router-dom'
 import {Divider, Collapse, Button, Spin, Image, Input, InputNumber,Empty, Modal } from 'antd'
@@ -69,10 +69,10 @@ const SliceList = ({changeSession, containerRef, setShowSliceList, setSearchValu
         if(key){
             const group = currentProjectGroups.find(g => g.imageGroupId === Number(key));
 
-            dispatch({
-                type: 'UPDATE_CURRENT_GROUP',
-                payload: group,
-            })
+            // dispatch({
+            //     type: 'UPDATE_CURRENT_GROUP',
+            //     payload: group,
+            // })
     
             setLoading(true)
     
@@ -165,7 +165,10 @@ const SliceList = ({changeSession, containerRef, setShowSliceList, setSearchValu
                                                     preview={false}
                                                     style={{ height: '64px', width: '64px'}}
                                                 />
-                                                <div style={{ width: '130px',wordWrap: 'break-word', marginLeft:'5px' }}>{image.imageName}</div>
+                                                 <div style={{ width: '130px',wordWrap: 'break-word', marginLeft:'5px', display: 'flex', flexDirection: 'column' }}>
+                                                    <span>{image.imageName}</span>
+                                                    {image.status === 4 && <CheckCircleTwoTone twoToneColor="#52c41a" />}
+                                                </div>
                                             </div>
                                         )))):
                                         (<Empty image={Empty.PRESENTED_IMAGE_SIMPLE} style={{height: '80px', marginTop: '15px', marginBottom:'0'}}/>)}

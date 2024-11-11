@@ -122,7 +122,7 @@ const ImgSwiper = ({ changeSession }) => {
                   style={{ textAlign: 'center', fontSize: '12px', width: '150px', color:'#fff' }}
               >
                 {/* {v.correctResult && <CheckCircleTwoTone twoToneColor="#52c41a" />} */}
-                {getStrWithLen(v.imageName, 20)}
+                {getStrWithLen(v.imageName, 20)}<CheckCircleTwoTone twoToneColor="#52c41a" />
               </div>
               {/* {Object.values(lastIndex).includes(index) && (
                 <div className={styles.divider}></div>

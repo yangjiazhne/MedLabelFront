@@ -519,6 +519,8 @@ const DataList = ({currentPage, setCurrentPage, currentPageSize, setCurrentPageS
     // @ts-ignore
     let { projectId } = useParams()
 
+    const lastEditImageId = parseInt(localStorage.getItem("lastEditImageId"))
+
     const readFile = async file => {
       return new Promise(function (resolve, reject) {
         const reader = new FileReader()
@@ -628,13 +630,13 @@ const DataList = ({currentPage, setCurrentPage, currentPageSize, setCurrentPageS
 
       return content.map((group, index) => {
         const status = imageStatus[index];
-        const [notUploaded, ongoing, success, failed] = status;
+        const [notUploaded, ongoing, success, failed, tagged] = status;
         
         return {
           imageGroupId: group.imageGroupId,
           imageGroupName: group.imageGroupName,
           TotalNum: status.reduce((acc, cur) => acc + cur, 0), // 计算总数
-          SuccessNum: success,
+          SuccessNum: success + tagged,
           OngoingNum: notUploaded + ongoing,
           FailedNum: failed
         };
@@ -1181,7 +1183,7 @@ const DataList = ({currentPage, setCurrentPage, currentPageSize, setCurrentPageS
                                   ))}
                                 </Space> */}
                                 <Table
-                                  columns={imageListColumnns(projectDetails, currentGroup, history)}
+                                  columns={imageListColumnns(projectDetails, currentGroup, history, lastEditImageId)}
                                   dataSource={imageDatas}
                                   pagination={false}
                                   // bordered

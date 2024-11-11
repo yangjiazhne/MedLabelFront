@@ -588,6 +588,10 @@ const PathoTaggerSpace = () => {
       //   break
       case 'saveToDone':
         // 保存标注信息并to done
+        if(currentImage.status === 0 || currentImage.status === 1 || currentImage.status === 3){
+          message.info("当前图像尚未转化结束，不可保存标注！")
+          break
+        }
         setIsUpdateDoneModalOpen(true)
         break
       // case 'logResult':
@@ -630,7 +634,7 @@ const PathoTaggerSpace = () => {
 
   return (
     <Spin spinning={loading}>
-      {projectHitsFetchEnd && currentGroupImages.length === 0 && (
+      {projectHitsFetchEnd && currentGroupImages.length === 0 && !currentImage && (
         <div className={styles.emptyPage}>
           <div style={{width: '100%', height: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
             <Empty description={ <span>当前分组下暂无数据</span>} imageStyle={{height: 200, width:400}}>
@@ -726,9 +730,10 @@ const PathoTaggerSpace = () => {
 
               if (!res.err) {
                 message.success('操作成功')
+                localStorage.setItem("lastEditImageId", currentImage.imageId)
                 setChangeSession(false)
                 // 保存数据结果时, 传入当前所在图像的索引值
-                fetchData(currentImage.imageId, currentGroup.groupId)
+                fetchData(currentImage.imageId, currentGroup.imageGroupId)
               } else {
                 message.error(res || '操作失败')
               }
@@ -815,7 +820,7 @@ const PathoTaggerSpace = () => {
                     <Divider style={{ marginTop: '0', marginBottom: '5px', backgroundColor: '#354052' }} />
                     <p style={{ wordWrap: 'break-word', marginBottom: '4px' }}>
                       <b>文件名: </b>
-                      {currentImage.imageUrl.substring(currentImage.imageUrl.lastIndexOf('/') + 1)}
+                      {currentImage?.imageUrl?.substring(currentImage.imageUrl.lastIndexOf('/') + 1)}
                     </p>
                     <p style={{ marginBottom: '4px' }}>
                       <b>图片宽高: </b>

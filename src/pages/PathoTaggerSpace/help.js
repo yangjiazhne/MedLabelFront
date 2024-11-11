@@ -60,8 +60,8 @@ export const getCurrentResult = currentCanvas => {
       case hitShapeTypes.POLYGONPATH:
         const polygonMatrix = item.calcTransformMatrix()
         // 获取当前polygon移动的距离
-        const polygonMoveX = polygonMatrix[4] - item.pathOffset.x + (1.5 - item.strokeWidth) / 2,   // 1.5为handler下的缩放尺度
-            polygonMoveY = polygonMatrix[5] - item.pathOffset.y + (1.5 - item.strokeWidth) / 2
+        const polygonMoveX = polygonMatrix[4] - item.pathOffset.x + (2 - item.strokeWidth) / 2,   // 1.5为handler下的缩放尺度
+            polygonMoveY = polygonMatrix[5] - item.pathOffset.y + (2 - item.strokeWidth) / 2
 
         baseInfo.points = item.points
             .map(point => [(point.x + polygonMoveX), (point.y + polygonMoveY)])

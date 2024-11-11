@@ -571,7 +571,7 @@ const TaggerSpaceNew = () => {
         </div>
         
         <div className={styles.container} ref={containerRef} style={{height: !currentImage?'700px':'auto'}}>
-          {currentGroupImages.length === 0 && (
+          {currentGroupImages.length === 0 && !currentImage && (
             <Empty
               style={{ marginTop: '50px' }}
               description={<h2 className={styles.noItems}> 当前分组暂无数据，请选择数据 </h2>}
@@ -662,10 +662,11 @@ const TaggerSpaceNew = () => {
 
               if (!res.err) {
                 message.success('操作成功')
+                localStorage.setItem("lastEditImageId", currentImage.imageId)
                 setChangeSession(false)
                 setIsUpdateDoneModalOpen(false)
                 // 保存数据结果时, 传入当前所在图像的索引值
-                fetchData(currentImage.imageId, currentGroup.groupId)
+                fetchData(currentImage.imageId, currentGroup.imageGroupId)
                 // updateImage(currentImage)
               } else {
                 message.error(res || '操作失败')
