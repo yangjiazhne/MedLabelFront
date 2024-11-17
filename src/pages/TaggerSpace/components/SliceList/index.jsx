@@ -35,8 +35,8 @@ const SliceList = ({changeSession, containerRef, setShowSliceList, setSearchValu
     const [sortedGroupImages, setSortedGroupImages] = useState([])
     useEffect(() => {
         if(!currentGroupImages) return
-        const _sortedGroupImages = currentGroupImages.slice().sort(compare)
-        setSortedGroupImages(_sortedGroupImages)
+        // const _sortedGroupImages = currentGroupImages.slice().sort(compare)
+        setSortedGroupImages(currentGroupImages)
     }, [currentGroupImages])
 
 
@@ -154,11 +154,14 @@ const SliceList = ({changeSession, containerRef, setShowSliceList, setSearchValu
                                            style={{backgroundColor:'#414e5f', border:'1px solid #272b33', marginBottom:'2px'}}>
                                         <Spin spinning={loading && group === currentGroup}>
                                         {sortedGroupImages.length > 0 ? 
-                                         ((sortedGroupImages.map(image => (
+                                         ((sortedGroupImages.map((image, index) => (
                                             <div className={styles.sliceItem}
                                                  style={{backgroundColor: `${currentImage?.imageId === image.imageId  ? 'rgba(65, 78, 95, .5)' : 'rgba(65, 78, 95, .8)'}`,
                                                          color: `${currentImage?.imageId === image.imageId  ? '#0275d8' : '#fff'}`}}
                                                  onClick={()=>{changeImage(image)}}>
+                                                <div style={{width: '8%', display: 'flex', alignItems: 'center', fontWeight: 'bold'}}>
+                                                    <span>{index + 1}</span>
+                                                </div>
                                                 <Image
                                                     src={image.imageUrl}
                                                     fallback={imgError}

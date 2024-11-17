@@ -30,7 +30,7 @@ export const singleGroupOperateItems = [
 ];
 
 
-export const imageListColumnns = (projectDetail, group, history, lastEditImageId) => {
+export const imageListColumnns = (projectDetail, group, history, lastEditImageId, page, pageSize) => {
 
   return [
     {
@@ -38,6 +38,9 @@ export const imageListColumnns = (projectDetail, group, history, lastEditImageId
       dataIndex: 'index',
       key: 'index',
       align: 'center',
+      render: (_, __, rowIndex) => {
+        return (page - 1) * pageSize + rowIndex + 1; // 计算序号
+      },
     },
     {
       title: '病例名称',
@@ -67,17 +70,17 @@ export const imageListColumnns = (projectDetail, group, history, lastEditImageId
               src={image.imageUrl}
               preview={false}
               fallback={imgError}
-              onClick={()=>{
-                window.sessionStorage.setItem('tagInitGroupId', group.imageGroupId)
-                window.sessionStorage.setItem('tagInitImageId', image.imageId)
-                if(projectDetail.imageType.imageTypeName === '病理图'){
-                  history.push(
-                    `/projects/pathoSpace/${projectDetail.projectId}?status=notDone&model=human-annotation`
-                  )
-                }else{
-                  history.push(`/projects/space/${projectDetail.projectId}?status=notDone&model=human-annotation`)
-                }
-              }}
+              // onClick={()=>{
+              //   window.sessionStorage.setItem('tagInitGroupId', group.imageGroupId)
+              //   window.sessionStorage.setItem('tagInitImageId', image.imageId)
+              //   if(projectDetail.imageType.imageTypeName === '病理图'){
+              //     history.push(
+              //       `/projects/pathoSpace/${projectDetail.projectId}?status=notDone&model=human-annotation`
+              //     )
+              //   }else{
+              //     history.push(`/projects/space/${projectDetail.projectId}?status=notDone&model=human-annotation`)
+              //   }
+              // }}
               style={{ height: '130px', width: '130px', cursor: 'pointer'}}
             />
         )

@@ -316,7 +316,7 @@ const PathoTaggerSpace = () => {
 
       let subscription;
       
-      const taskId = `medlabel_image_convert_${currentImage.imageId}`
+      const taskId = `medlabel_dev_image_convert_${currentImage.imageId}`
 
       // 连接到 WebSocket 服务器
       stompClient.connect({}, frame => {
@@ -702,6 +702,15 @@ const PathoTaggerSpace = () => {
             open={isUpdateDoneModalOpen}
             onCreate={async(values) => {
               const {annotationName, annotatedBy, description} = values
+              const annotationRes = await searchAnnotation(currentImage.imageId)
+              const allAnnotations = annotationRes.data.content
+              const matchedAnnotation = allAnnotations.find(anno => anno.annotationName === annotationName)
+
+              if((currentAnnotion && matchedAnnotation && matchedAnnotation.length !== 0 && matchedAnnotation.annotationId != currentAnnotion.annotationId)||(!currentAnnotion && matchedAnnotation && matchedAnnotation.length !== 0)){
+                message.error("标注文件名称已存在，请重新命名！")
+                return
+              }
+
               const result = getCurrentResult(currentCanvas)
               const entities = customEntities
 
@@ -733,7 +742,7 @@ const PathoTaggerSpace = () => {
                 localStorage.setItem("lastEditImageId", currentImage.imageId)
                 setChangeSession(false)
                 // 保存数据结果时, 传入当前所在图像的索引值
-                fetchData(currentImage.imageId, currentGroup.imageGroupId)
+                // fetchData(currentImage.imageId, currentGroup.imageGroupId)
               } else {
                 message.error(res || '操作失败')
               }

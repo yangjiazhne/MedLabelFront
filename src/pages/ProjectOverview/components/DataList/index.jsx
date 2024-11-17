@@ -542,10 +542,11 @@ const DataList = ({currentPage, setCurrentPage, currentPageSize, setCurrentPageS
     // //每页显示数据集个数
     // const [currentPageSize, setCurrentPageSize] = useState(10)
 
-    const onChange: PaginationProps['onChange'] = pageNumber => {
-      setCurrentPage(pageNumber)
-      refreshImage(pageNumber - 1, currentPageSize)
-    }
+    // const onChange: PaginationProps['onChange'] = pageNumber => {
+    //   setCurrentPage(pageNumber)
+    //   refreshImage(pageNumber - 1, currentPageSize)
+    // }
+    const [isPageSizeChanging, setIsPageSizeChanging] = useState(false);
 
     const refreshImage = async(page, size) => {
       const imageRes = await searchImage(currentGroup.imageGroupId,undefined,undefined,undefined,undefined,page,size)
@@ -1183,26 +1184,55 @@ const DataList = ({currentPage, setCurrentPage, currentPageSize, setCurrentPageS
                                   ))}
                                 </Space> */}
                                 <Table
-                                  columns={imageListColumnns(projectDetails, currentGroup, history, lastEditImageId)}
+                                  columns={imageListColumnns(projectDetails, currentGroup, history, lastEditImageId, currentPage, currentPageSize)}
                                   dataSource={imageDatas}
                                   pagination={false}
+                                  onRow={(record) => ({
+                                    onClick: () => {
+                                      window.sessionStorage.setItem('tagInitGroupId', currentGroup.imageGroupId);
+                                      window.sessionStorage.setItem('tagInitImageId', record.imageId);
+                                      if (projectDetails.imageType.imageTypeName === '病理图') {
+                                        history.push(
+                                          `/projects/pathoSpace/${projectDetails.projectId}?status=notDone&model=human-annotation`
+                                        );
+                                      } else {
+                                        history.push(
+                                          `/projects/space/${projectDetails.projectId}?status=notDone&model=human-annotation`
+                                        );
+                                      }
+                                    },
+                                    style: { cursor: 'pointer' },
+                                  })}
                                   // bordered
                                 />
                                 <ConfigProvider locale={zhCN}>
                                   <Pagination
                                     current={currentPage}
+                                    pageSize={currentPageSize}
                                     showQuickJumper
                                     showSizeChanger
                                     onShowSizeChange={(current, size) => {
-                                      setCurrentPage(1)
+                                      // setIsPageSizeChanging(true)
+                                      localStorage.setItem('pageSize', size.toString());
                                       setCurrentPageSize(size)
+                                      setCurrentPage(1)
                                       refreshImage(0, size)
+                                      // 异步延迟恢复状态，确保 onChange 不被触发
+                                      // setTimeout(() => {
+                                      //   setIsPageSizeChanging(false);
+                                      // }, 0);
                                     }}
                                     pageSizeOptions={['10', '20', '30', '40', '50']}
-                                    defaultCurrent={1}
-                                    defaultPageSize={10}
+                                    // defaultCurrent={1}
+                                    // defaultPageSize={parseInt(localStorage.getItem('pageSize')) || 10}
                                     total={currentGroupImageLength}
-                                    onChange={onChange}
+                                    onChange={pageNumber => {
+                                      if(pageNumber === currentPage){
+                                        return
+                                      }
+                                      setCurrentPage(pageNumber)
+                                      refreshImage(pageNumber - 1, currentPageSize)
+                                    }}
                                     style={{
                                       alignSelf: 'center',
                                       width: '100%',

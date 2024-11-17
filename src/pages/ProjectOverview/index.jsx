@@ -63,7 +63,9 @@ const ProjectOverview = () => {
   //控制当前页数
   const [currentPage, setCurrentPage] = useState(1)
   //每页显示数据集个数
-  const [currentPageSize, setCurrentPageSize] = useState(10)
+  const [currentPageSize, setCurrentPageSize] = useState(
+    parseInt(localStorage.getItem('pageSize')) || 10
+  );
   
   // const deleteProjectModals = () => {
   //   Modal.confirm({

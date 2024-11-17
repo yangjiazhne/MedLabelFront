@@ -10,6 +10,12 @@
   flex: 1;
 }
 
+.left div {
+  display: flex;
+  align-items: center;
+}
+
+
 .divider {
   position: absolute;
   display: inline-block;

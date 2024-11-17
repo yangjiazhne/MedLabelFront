@@ -561,14 +561,25 @@ const RightBar = ({ setShowTagBox, space, isDone, saveRow, setUpdateReady, updat
                       label={shape.label}
                       title={shape.title}
                       onClick={() => {
-                        dispatch({
-                          type: 'UPDATE_CURRENT_SHAPE',
-                          payload: shape.value,
-                        })
-                        dispatch({
-                          type: 'UPDATE_CURRENT_CONTROL_TYPE',
-                          payload: contorlTypes.DEFAULT,
-                        })
+                        if(shape.value === currentShape){
+                          dispatch({
+                            type: 'UPDATE_CURRENT_CONTROL_TYPE',
+                            payload: contorlTypes.DRAG,
+                          })
+                          dispatch({
+                            type: 'UPDATE_CURRENT_SHAPE',
+                            payload: hitShapeTypes.NONE,
+                          })
+                        }else{
+                          dispatch({
+                            type: 'UPDATE_CURRENT_SHAPE',
+                            payload: shape.value,
+                          })
+                          dispatch({
+                            type: 'UPDATE_CURRENT_CONTROL_TYPE',
+                            payload: contorlTypes.DEFAULT,
+                          })
+                        }
                       }}
                     />
                   ))}

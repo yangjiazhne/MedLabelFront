@@ -58,8 +58,8 @@ const ImgSwiper = ({ changeSession }) => {
     if(!currentImage) return
     const isImageInGroup = currentGroupImages.some(image => image.imageId === currentImage.imageId)
     if(isImageInGroup){
-      const _sortedGroupImages = currentGroupImages.slice().sort(compare)
-      setSortedGroupImages(_sortedGroupImages)
+      // const _sortedGroupImages = currentGroupImages.slice().sort(compare)
+      setSortedGroupImages(currentGroupImages)
     }
   }, [currentImage])
 
@@ -119,10 +119,11 @@ const ImgSwiper = ({ changeSession }) => {
               />
               <div
                   title={v.imageName}
-                  style={{ textAlign: 'center', fontSize: '12px', width: '150px', color:'#fff' }}
+                  style={{ textAlign: 'center', fontSize: '12px', width: '150px', color:'#fff', display: 'flex', justifyContent: 'center' }}
               >
                 {/* {v.correctResult && <CheckCircleTwoTone twoToneColor="#52c41a" />} */}
-                {getStrWithLen(v.imageName, 20)}<CheckCircleTwoTone twoToneColor="#52c41a" />
+                {getStrWithLen(v.imageName, 20)}
+                {v.status === 4 && <CheckCircleTwoTone twoToneColor="#52c41a" style={{marginLeft: '5px'}}/>}
               </div>
               {/* {Object.values(lastIndex).includes(index) && (
                 <div className={styles.divider}></div>
