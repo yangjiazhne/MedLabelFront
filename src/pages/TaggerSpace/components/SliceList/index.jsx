@@ -10,6 +10,7 @@ import { searchImage, fetchImageTileInfo } from '@/request/actions/image'
 import { imgError } from './config'
 const { Search } = Input;
 import useDidUpdateEffect from '@/hooks/useDidUpdateEffect'
+import { getStrWithLen } from '@/helpers/Utils'
 
 function compare(itemA, itemB) {
     if (itemA.imageName < itemB.imageName) return -1
@@ -159,7 +160,7 @@ const SliceList = ({changeSession, containerRef, setShowSliceList, setSearchValu
                                                  style={{backgroundColor: `${currentImage?.imageId === image.imageId  ? 'rgba(65, 78, 95, .5)' : 'rgba(65, 78, 95, .8)'}`,
                                                          color: `${currentImage?.imageId === image.imageId  ? '#0275d8' : '#fff'}`}}
                                                  onClick={()=>{changeImage(image)}}>
-                                                <div style={{width: '8%', display: 'flex', alignItems: 'center', fontWeight: 'bold'}}>
+                                                <div style={{width: '12%', display: 'flex', alignItems: 'center', fontWeight: 'bold', justifyContent: 'space-around'}}>
                                                     <span>{index + 1}</span>
                                                 </div>
                                                 <Image
@@ -168,8 +169,8 @@ const SliceList = ({changeSession, containerRef, setShowSliceList, setSearchValu
                                                     preview={false}
                                                     style={{ height: '64px', width: '64px'}}
                                                 />
-                                                 <div style={{ width: '130px',wordWrap: 'break-word', marginLeft:'5px', display: 'flex', flexDirection: 'column' }}>
-                                                    <span>{image.imageName}</span>
+                                                 <div style={{ width: '120px',wordWrap: 'break-word', marginLeft:'5px', display: 'flex', flexDirection: 'column' }} title={image.imageName}>
+                                                    <span>{getStrWithLen(image.imageName, 25)}</span>
                                                     {image.status === 4 && <CheckCircleTwoTone twoToneColor="#52c41a" />}
                                                 </div>
                                             </div>

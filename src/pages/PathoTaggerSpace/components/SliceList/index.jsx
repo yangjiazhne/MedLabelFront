@@ -10,6 +10,7 @@ import { searchImage, fetchImageTileInfo } from '@/request/actions/image'
 import { imgError } from './config'
 const { Search } = Input;
 import useDidUpdateEffect from '@/hooks/useDidUpdateEffect'
+import { getStrWithLen } from '@/helpers/Utils'
 
 function compare(itemA, itemB) {
     if (itemA.imageUrl.substring(itemA.imageUrl.lastIndexOf('/') + 1) < itemB.imageUrl.substring(itemB.imageUrl.lastIndexOf('/') + 1) ) return -1
@@ -183,7 +184,7 @@ const SliceList = ({changeSession, setShowSliceList, setSearchValue, currentPage
                                                  style={{backgroundColor: `${currentImage?.imageId === image.imageId  ? 'rgba(65, 78, 95, .5)' : 'rgba(65, 78, 95, .8)'}`,
                                                          color: `${currentImage?.imageId === image.imageId  ? '#fff' : '#25b0e5'}`}}
                                                  onClick={()=>{changeImage(image)}}>
-                                                <div style={{width: '8%', display: 'flex', alignItems: 'center', fontWeight: 'bold'}}>
+                                                <div style={{width: '12%', display: 'flex', alignItems: 'center', fontWeight: 'bold', justifyContent: 'space-around'}}>
                                                     <span>{index + 1}</span>
                                                 </div>
                                                 <Image
@@ -192,8 +193,9 @@ const SliceList = ({changeSession, setShowSliceList, setSearchValue, currentPage
                                                     preview={false}
                                                     style={{ height: '64px', width: '64px'}}
                                                 />
-                                                <div style={{ width: '130px',wordWrap: 'break-word', marginLeft:'5px', display:'flex', flexDirection: 'column' }}>
-                                                    <span>{image.imageUrl.substring(image.imageUrl.lastIndexOf('/') + 1)}</span>
+                                                <div style={{ width: '120px',wordWrap: 'break-word', marginLeft:'5px', display:'flex', flexDirection: 'column' }} title={image.imageUrl.substring(image.imageUrl.lastIndexOf('/') + 1)}>
+                                                    {/* <span>{image.imageUrl.substring(image.imageUrl.lastIndexOf('/') + 1)}</span> */}
+                                                    <span>{getStrWithLen(image.imageUrl.substring(image.imageUrl.lastIndexOf('/') + 1), 25)}</span>
                                                     {image.status === 4 && <CheckCircleTwoTone twoToneColor="#52c41a" />}
                                                 </div>
                                             </div>
