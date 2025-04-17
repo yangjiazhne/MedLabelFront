@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Image, Divider, Col, Row, Table, Modal, Input, Form, Dropdown, Checkbox, Empty, ConfigProvider, Pagination, message, Select, Upload, Button, Progress, Space, Tag } from 'antd'
-import { EllipsisOutlined, RedoOutlined, PlusSquareOutlined, ExportOutlined, MenuOutlined, DeleteOutlined, ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons'
+import { Image, Divider, Col, Row, Table, Modal, Input, Form, Dropdown, Checkbox, Empty, ConfigProvider, Pagination, message, Select, Upload, Button, Progress, Space, Tag, Alert, notification  } from 'antd'
+import { EllipsisOutlined, RedoOutlined, PlusSquareOutlined, ExportOutlined, MenuOutlined, DeleteOutlined, ExclamationCircleOutlined, UploadOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons'
 import { imgError, groupOperateItems, singleGroupOperateItems, imageListColumnns } from './config'
 import { useHistory, useParams } from 'react-router-dom'
 import styles from './index.module.scss'
@@ -9,7 +9,8 @@ import { copyToClip, getStrWithLen } from '@/helpers/Utils'
 import { VButton } from '@/components'
 import zhCN from 'antd/lib/locale/zh_CN'
 import { updateGroup, createGroup, deleteGroup, searchGroup} from '@/request/actions/group'
-import { updateImage, uploadImage, uploadImageFolder, deleteImage, searchImage} from '@/request/actions/image'
+import { updateImage, uploadImage, uploadImageFolder, deleteImage, searchImage } from '@/request/actions/image'
+import { uploadJson, uploadJsonFolder } from '@/request/actions/annotation'
 
 const { TextArea } = Input;
 const { Dragger } = Upload
@@ -338,6 +339,75 @@ const ImageUploadForm = ({open, onCreate, onCancel, title, okText, imageType, op
   )
 }
 
+// 上传JSON Modal
+const JsonUploadForm = ({open, onCreate, onCancel, title, okText, options}) => {
+  const [form] = Form.useForm()
+  
+  const [txtJsonFile, setTxtJsonFile] = useState(null)
+
+  const beforeUpload = file => {
+    setTxtJsonFile(file)
+    return false
+  }
+
+  return (
+    <Modal
+      open={open}
+      title={title}
+      okText={okText}
+      cancelText="取消"
+      onCancel={onCancel}
+      destroyOnClose
+      onOk={() => {
+        form
+          .validateFields()
+          .then((values) => {
+            onCreate(values, txtJsonFile);
+            form.resetFields();
+          })
+          .catch((info) => {
+            console.log('Validate Failed:', info);
+          });
+      }}
+    >
+      <Form
+        form={form}
+        layout="vertical"
+        name="ImageUploadForm"
+      >
+        <Form.Item
+          label="分组名称"
+          name="group"
+          rules={[
+            {
+              required: true,
+              message: '必须选择分组',
+            },
+          ]}
+        >
+            <Select
+              style={{ width: '100%' }}
+              options={options}
+            ></Select>
+        </Form.Item>
+        <div style={{ marginBottom: '15px' }}>
+          <Dragger
+            beforeUpload={beforeUpload}
+            showUploadList={true}
+            maxCount={1} 
+            accept=".txt"
+          >
+            <p className="ant-upload-drag-icon">
+              <UploadOutlined />
+            </p>
+            <p className="ant-upload-text">点击或拖拽文件到此区域</p>
+          </Dragger>
+        </div>
+      </Form>
+    </Modal>
+  )
+}
+
 // 删除图像Modal
 const ImageDeleteForm = ({open, onDelete, onCancel, groupImages}) => {
   const showDeleteConfirm = () => {
@@ -514,12 +584,16 @@ const DataList = ({currentPage, setCurrentPage, currentPageSize, setCurrentPageS
         // @ts-ignore
         state => state.project
       )
+
+    const { userDetail } = useSelector(state => state.user)
+
     const dispatch = useDispatch()
     const history = useHistory()
     // @ts-ignore
     let { projectId } = useParams()
 
     const lastEditImageId = parseInt(localStorage.getItem("lastEditImageId"))
+    const lastViewImageId = parseInt(localStorage.getItem("lastViewImageId"))
 
     const readFile = async file => {
       return new Promise(function (resolve, reject) {
@@ -575,7 +649,7 @@ const DataList = ({currentPage, setCurrentPage, currentPageSize, setCurrentPageS
             return {
               ...item,
               imageName: item.imageUrl.substring(item.imageUrl.lastIndexOf('/') + 1),
-              imageUrl: `/uploads/${projectId}/${item.imageName}.png`,
+              imageUrl: `/uploads/${projectId}/thumbnail/${item.imageName}.png`,
               index: (index + 1).toString().padStart(2, '0')
             };            
           }
@@ -593,6 +667,7 @@ const DataList = ({currentPage, setCurrentPage, currentPageSize, setCurrentPageS
     const [isDeleteGroupModalOpen, setIsDeleteGroupModalOpen] = useState(false)
     const [isMoveImgModalOpen, setIsMoveImgModalOpen] = useState(false)
     const [isUploadImageModalOpen, setIsUploadImageModalOpen] = useState(false)
+    const [isUploadJsonModalOpen, setIsUploadJsonModalOpen] = useState(false)
     const [isDeleteImageModalOpen, setIsDeleteImageModalOpen] = useState(false)
     const [showTaskDetailModal, setShowTaskDetailModal] = useState(false)
 
@@ -608,7 +683,7 @@ const DataList = ({currentPage, setCurrentPage, currentPageSize, setCurrentPageS
       )
     }, [taskDetails])
 
-      // 定时刷新任务详情
+    // 定时刷新任务详情
     useEffect(() => {
       if (showTaskDetailModal && taskDetails && !taskDetailsFetchEnd) {
         const intervalId = setInterval(async () => {
@@ -752,6 +827,90 @@ const DataList = ({currentPage, setCurrentPage, currentPageSize, setCurrentPageS
         payload: imageRes.data.totalElements
       })
 
+    }
+
+    const openNotification = (placement) => {
+      notification.info({
+        message: '注意',
+        description:
+          '请先选择分组，并确保分组内的图像名称不存在重复，且上传的JSON文件与选择分组下的图像一一对应！',
+        placement,
+        style: {
+          zIndex: 1001,
+        },
+        icon: (
+          <ExclamationCircleOutlined
+            style={{
+              color: '#ffe58f',
+            }}
+          />
+        ),
+        duration: 0,
+      });
+    };
+
+    const switchLastViewOrEdit = async (type) => {
+      message.warning("功能正在开发中！")
+      return
+
+
+      let imageId
+      if(type === 'view'){
+        imageId = parseInt(localStorage.getItem("lastViewImageId"))
+      }else if (type === 'edit'){
+        imageId = parseInt(localStorage.getItem("lastEditImageId"))
+      }
+
+      if(!imageId){
+        type === "view" ? message.warning("没有最新查看图像的记录") : message.warning("没有最新编辑的图像记录")
+        return
+      }
+
+      const res = await searchImage(46, undefined, imageId)
+
+      const imgRes =  res.data.content[0]
+
+      const gId = imgRes.imageGroup.imageGroupId
+
+      const exist = currentProjectGroups.some(group => group.imageGroupId === gId);
+
+      if(!exist){
+        type === "view" ? message.warning("最新一次查看的图像不在此数据集内") : message.warning("最新一次编辑的图像不在此数据集内")
+        return
+      }
+
+      const group = currentProjectGroups.find(g => g.imageGroupId === gId);
+
+      dispatch({
+        type: 'UPDATE_CURRENT_GROUP',
+        payload: group,
+      })
+
+      const imageAllRes = await searchImage(gId)
+      const imageAll = imageAllRes.data.content
+
+      //查看当前imageAllRes在第几页
+      const index = imageAll.findIndex(i => i.imageId === imageId)
+
+      if (index === -1) { // 确保找到了目标元素
+        message.warning("未找到对应图像")
+        return
+      }
+
+      const imagePage = Math.floor(index / currentPageSize);
+      console.log(`当前图片位于第 ${imagePage} 页`);
+
+      setCurrentPage(imagePage+1)
+      const imageRes = await searchImage(group.imageGroupId, undefined, undefined, undefined, undefined, imagePage, currentPageSize)
+      dispatch({
+        type: 'UPDATE_CURRENT_GROUP_IMAGES',
+        payload: imageRes.data.content
+      })
+      dispatch({
+        type: 'UPDATE_CURRENT_GROUP_IMAGE_LENGTH',
+        payload: imageRes.data.totalElements
+      })
+      message.success("已为您定位到图像位置")
     }
 
     return(
@@ -929,6 +1088,22 @@ const DataList = ({currentPage, setCurrentPage, currentPageSize, setCurrentPageS
                             </div>
                             <div style={{ marginLeft: 'auto' }}>
                               <VButton
+                                  color="#69c0ff"
+                                  style={{marginRight: '5px'}}
+                                  icon={<EditOutlined style={{ color: 'white' }} />}
+                                  onClick={() => {switchLastViewOrEdit("edit")}}
+                              >
+                                最新编辑
+                              </VButton>
+                              <VButton
+                                  color="#85a5ff"
+                                  style={{marginRight: '5px'}}
+                                  icon={<EyeOutlined style={{ color: 'white' }} />}
+                                  onClick={() => {switchLastViewOrEdit("view")}}
+                              >
+                                最新查看
+                              </VButton>
+                              <VButton
                                   color="#FFA500"
                                   style={{marginRight: '5px'}}
                                   icon={<RedoOutlined style={{ color: 'white' }} />}
@@ -963,7 +1138,7 @@ const DataList = ({currentPage, setCurrentPage, currentPageSize, setCurrentPageS
                                         return {
                                           ...item,
                                           imageName: item.imageUrl.substring(item.imageUrl.lastIndexOf('/') + 1),
-                                          imageUrl: `/uploads/${projectId}/${item.imageName}.png`,
+                                          imageUrl: `/uploads/${projectId}/thumbnail/${item.imageName}.png`,
                                           index: (index + 1).toString().padStart(2, '0')
                                         };            
                                       }
@@ -997,7 +1172,7 @@ const DataList = ({currentPage, setCurrentPage, currentPageSize, setCurrentPageS
                                         return {
                                           ...item,
                                           imageName: item.imageUrl.substring(item.imageUrl.lastIndexOf('/') + 1),
-                                          imageUrl: `/uploads/${projectId}/${item.imageName}.png`,
+                                          imageUrl: `/uploads/${projectId}/thumbnail/${item.imageName}.png`,
                                           index: (index + 1).toString().padStart(2, '0')
                                         };            
                                       }
@@ -1011,6 +1186,7 @@ const DataList = ({currentPage, setCurrentPage, currentPageSize, setCurrentPageS
                               </VButton>
                               <VButton
                                   color="#52c41a"
+                                  style={{marginRight: '5px'}}
                                   icon={<PlusSquareOutlined style={{ color: 'white' }} />}
                                   onClick={() => {
                                     if(currentProjectGroups.length === 0){
@@ -1028,7 +1204,27 @@ const DataList = ({currentPage, setCurrentPage, currentPageSize, setCurrentPageS
                                     setIsUploadImageModalOpen(true)
                                   }}
                               >
-                                  上传
+                                  上传图像
+                              </VButton>
+                              <VButton
+                                  color="#009688"
+                                  icon={<PlusSquareOutlined style={{ color: 'white' }} />}
+                                  onClick={() => {
+                                    if(currentGroupImages.length ===0){
+                                      message.error("请先上传图像！")
+                                      return
+                                    }
+                                    
+                                    const value = currentProjectGroups?.map(group => ({
+                                      value: group.imageGroupId,
+                                      label: group.imageGroupName
+                                    }));
+                                    setGroupOptions(value)
+                                    setIsUploadJsonModalOpen(true)
+                                    openNotification('top')
+                                  }}
+                              >
+                                  上传标注
                               </VButton>
                             </div>
                             <ImgMoveForm 
@@ -1145,6 +1341,84 @@ const DataList = ({currentPage, setCurrentPage, currentPageSize, setCurrentPageS
                               options={groupOptions}
                             />
 
+                            <JsonUploadForm 
+                              open={isUploadJsonModalOpen}
+                              onCreate={async (values, txtFile) => {
+                                  const { group } = values
+                                  
+                                  if (!txtFile) {
+                                    message.error('Please choose a txt file')
+                                    return
+                                  }
+
+                                  const content = await readFile(txtFile)
+                                  const lines = content
+                                    .split('\n')
+                                    .map(line => line.trim())
+                                    .filter(line => line !== '')
+                                  const total = lines.length
+                                  if (total < 1) {
+                                    Modal.error({
+                                      content: '输入的txt文件中无有效地址',
+                                    })
+                                    return 0
+                                  }
+
+                                  const jsonList = [];
+                                  const folderList = [];
+
+                                  lines.forEach(path => {
+                                    const lastPart = path.substring(path.lastIndexOf('/') + 1);  // 获取最后一个 "/" 之后的部分
+
+                                    // 如果最后的部分包含 "."，则判断为文件（例如json），否则判断为文件夹
+                                    if (lastPart.includes('.')) {
+                                      jsonList.push(path);  // 这是一个文件（json）
+                                    } else {
+                                      folderList.push(path); // 这是一个文件夹
+                                    }
+                                  });
+                                  
+                                  if (folderList.length > 0){
+                                    console.log(folderList)
+                                    try {
+                                      const responses = await Promise.all(
+                                        folderList.map(line => 
+                                          uploadJsonFolder({
+                                            imageGroupId: group,
+                                            projectId: projectId,
+                                            userName: userDetail.username,
+                                            jsonUrls: line,
+                                          })
+                                        )
+                                      );
+                                    } catch (error) {
+                                      message.error("上传失败")
+                                    }
+                                  }
+                            
+                                  if (jsonList.length > 0){
+                                    console.log(jsonList)
+                                    const res = await uploadJson({
+                                      imageGroupId: group,
+                                      projectId: projectId,
+                                      userName: userDetail.username,
+                                      jsonUrls: jsonList
+                                    })
+                            
+                                    if(res.err){
+                                      message.error("上传失败")
+                                    }
+                                  }
+
+                                  setIsUploadJsonModalOpen(false);
+                                  message.success("数据正在上传中....")
+                              }}
+                              onCancel={()=>{setIsUploadJsonModalOpen(false)}}
+                              title={"上传标注文件"}
+                              okText={"上传"}
+                              options={groupOptions}
+                            />
+
                             <ImageDeleteForm
                                 open={isDeleteImageModalOpen}
                                 onDelete={
@@ -1184,11 +1458,12 @@ const DataList = ({currentPage, setCurrentPage, currentPageSize, setCurrentPageS
                                   ))}
                                 </Space> */}
                                 <Table
-                                  columns={imageListColumnns(projectDetails, currentGroup, history, lastEditImageId, currentPage, currentPageSize)}
+                                  columns={imageListColumnns(projectDetails, currentGroup, history, lastEditImageId, lastViewImageId, currentPage, currentPageSize)}
                                   dataSource={imageDatas}
                                   pagination={false}
                                   onRow={(record) => ({
                                     onClick: () => {
+                                      console.log( currentGroup.imageGroupId, record.imageId )
                                       window.sessionStorage.setItem('tagInitGroupId', currentGroup.imageGroupId);
                                       window.sessionStorage.setItem('tagInitImageId', record.imageId);
                                       if (projectDetails.imageType.imageTypeName === '病理图') {

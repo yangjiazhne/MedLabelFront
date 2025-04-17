@@ -185,6 +185,19 @@
       .ActiveObjCardDelete:hover{
         background-color: #f78989;
       }
+
+      .ActiveObjCardClassEdit{
+        background-color: #95de64;
+        border-radius: 3px;
+        cursor: pointer;
+        text-align: center;
+        margin-right: 10px;
+        width: 30px;
+        height: 20px;
+      }
+      .ActiveObjCardClassEdit:hover{
+        background-color:#b7eb8f;
+      }
     }
   }
 
@@ -225,5 +238,26 @@
 
     border: 2px solid #000000;
     background: #fff;
+  }
+}
+
+.entityWrap {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  overflow: auto;
+  max-height: 100px;
+  .entityItemWrap {
+    font-size: 12px;
+    cursor: pointer;
+    margin: 5px 1px;
+    padding: 6px;
+    align-items: center;
+    display: flex;
+    justify-content: space-around;
+    box-shadow: #56677d;
+    &:hover {
+      background-color: #6c809a !important;
+    }
   }
 }

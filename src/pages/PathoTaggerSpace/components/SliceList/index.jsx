@@ -18,7 +18,7 @@ function compare(itemA, itemB) {
     else return 0
 }
 
-const SliceList = ({changeSession, setShowSliceList, setSearchValue, currentPage, setCurrentPage, setCurrentPageSize, setHistoryChat}) => {
+const SliceList = ({changeSession, setShowSliceList, setSearchValue, currentPage, setCurrentPage, setCurrentPageSize, setHistoryChat, showSliceList}) => {
     const {
         currentGroupImages, // 项目图片信息
         currentProjectGroups,
@@ -65,6 +65,7 @@ const SliceList = ({changeSession, setShowSliceList, setSearchValue, currentPage
 
     const onChangeGroup = async (key) => {
         if(key){
+            setActiveKey([key])
             const group = currentProjectGroups.find(g => g.imageGroupId === Number(key));
 
             // dispatch({
@@ -88,6 +89,8 @@ const SliceList = ({changeSession, setShowSliceList, setSearchValue, currentPage
             })
     
             setLoading(false)
+        }else{
+            setActiveKey([])
         }
     }
 
@@ -99,8 +102,9 @@ const SliceList = ({changeSession, setShowSliceList, setSearchValue, currentPage
                 payload: {...image},
             })
 
-            window.sessionStorage.setItem('tagInitGroupId', currentGroup.imageGroupId)
+            window.sessionStorage.setItem('tagInitGroupId', image.imageGroup.imageGroupId)
             window.sessionStorage.setItem('tagInitImageId', image.imageId)
+            localStorage.setItem("lastViewImageId", image.imageId)
     
             //获取病理图信息
             try{
@@ -147,12 +151,44 @@ const SliceList = ({changeSession, setShowSliceList, setSearchValue, currentPage
         setCurrentPage(Math.floor(value))
     ]
 
+    const [activeKey, setActiveKey] = useState([]);
+    const sliceItemRefs = useRef({}); // 存储所有 sliceItem 的 ref
+    useEffect(() => {
+        console.log(showSliceList)
+        if(!currentImage) return
+
+        const curGroupId = currentImage.imageGroup.imageGroupId
+
+        if(!showSliceList) {
+            console.log(curGroupId)
+            onChangeGroup(curGroupId)
+            return
+        }
+        // 查找当前image所在的Group
+        
+        setActiveKey([curGroupId]);
+
+         // 让 currentImage 滚动到 sliceListBody 容器的最上方
+        setTimeout(() => {
+            const currentImageRef = sliceItemRefs.current[currentImage?.imageId];
+            if (currentImageRef) {
+                console.log(currentImageRef)
+                currentImageRef.scrollIntoView({
+                    behavior: "smooth", // 平滑滚动
+                    block: "start", // 使其对齐 sliceListBody 容器顶部
+                    inline: "nearest"
+                });
+            }
+        }, 500); // 延迟执行，确保 DOM 已渲染
+
+    }, [showSliceList])
+
     return (
         <>
             <Draggable handle={`.${styles.sliceListHeader}`} 
                        bounds={bounds}
                        onStart={(event, uiData) => onStart(event, uiData)}>
-                <div className={styles.sliceListContainer} ref={draggleRef}>
+                <div className={styles.sliceListContainer} ref={draggleRef} style={{ display: showSliceList ? 'block' : 'none' }}>
                     <div className={styles.innerContainer}>
                         <div className={styles.sliceListHeader}>
                             <p className={styles.sliceListTitle}>切片列表</p>
@@ -170,7 +206,8 @@ const SliceList = ({changeSession, setShowSliceList, setSearchValue, currentPage
                         <Divider style={{ marginTop: '5px', marginBottom: '5px', backgroundColor: '#354052' }} />
                         <div className={styles.sliceListBody}>
                             <Collapse accordion
-                                      defaultActiveKey={[currentGroup.imageGroupId]}
+                                    //   defaultActiveKey={[currentGroup.imageGroupId]}
+                                      activeKey={activeKey} 
                                       onChange={onChangeGroup} 
                                       style={{border:'1px solid #272b33', backgroundColor:'transparent'}} 
                                       className={styles.customCollapse}>
@@ -180,11 +217,14 @@ const SliceList = ({changeSession, setShowSliceList, setSearchValue, currentPage
                                         <Spin spinning={loading && group === currentGroup}>
                                         {sortedGroupImages.length > 0 ? 
                                          ((sortedGroupImages.map((image, index) => (
-                                            <div className={styles.sliceItem}
-                                                 style={{backgroundColor: `${currentImage?.imageId === image.imageId  ? 'rgba(65, 78, 95, .5)' : 'rgba(65, 78, 95, .8)'}`,
+                                            <div 
+                                                key={image.imageId}
+                                                ref={(el) => sliceItemRefs.current[image.imageId] = el} // 存储 ref
+                                                className={styles.sliceItem}
+                                                style={{backgroundColor: `${currentImage?.imageId === image.imageId  ? 'rgba(65, 78, 95, .5)' : 'rgba(65, 78, 95, .8)'}`,
                                                          color: `${currentImage?.imageId === image.imageId  ? '#fff' : '#25b0e5'}`}}
-                                                 onClick={()=>{changeImage(image)}}>
-                                                <div style={{width: '12%', display: 'flex', alignItems: 'center', fontWeight: 'bold', justifyContent: 'space-around'}}>
+                                                onClick={()=>{changeImage(image)}}>
+                                                <div style={{width: '40px', display: 'flex', alignItems: 'center', fontWeight: 'bold', justifyContent: 'space-around'}}>
                                                     <span>{index + 1}</span>
                                                 </div>
                                                 <Image
@@ -193,7 +233,7 @@ const SliceList = ({changeSession, setShowSliceList, setSearchValue, currentPage
                                                     preview={false}
                                                     style={{ height: '64px', width: '64px'}}
                                                 />
-                                                <div style={{ width: '120px',wordWrap: 'break-word', marginLeft:'5px', display:'flex', flexDirection: 'column' }} title={image.imageUrl.substring(image.imageUrl.lastIndexOf('/') + 1)}>
+                                                <div style={{ width: '105px',wordWrap: 'break-word', marginLeft:'5px', display:'flex', flexDirection: 'column' }} title={image.imageUrl.substring(image.imageUrl.lastIndexOf('/') + 1)}>
                                                     {/* <span>{image.imageUrl.substring(image.imageUrl.lastIndexOf('/') + 1)}</span> */}
                                                     <span>{getStrWithLen(image.imageUrl.substring(image.imageUrl.lastIndexOf('/') + 1), 25)}</span>
                                                     {image.status === 4 && <CheckCircleTwoTone twoToneColor="#52c41a" />}

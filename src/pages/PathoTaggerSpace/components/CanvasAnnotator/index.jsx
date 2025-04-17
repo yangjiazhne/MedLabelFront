@@ -187,6 +187,8 @@ const CanvasAnnotator = ({
   // const [currentZoomLevel, setCurrentZoomLevel] = useState(1) // 当前放大倍数
   const [taginfoValue, setTaginfoValue] = useState('')
   const [isTagInfoModalOpen, setIsTagInfModalOpen] = useState(false);
+  const [isEditClassModalOpen, setIsEditClassModalOpen] = useState(false);
+  const [currentEditClass, setCurrentEditClass] = useState('')
   const handleTagInfoModalOk = () => {
     if(currentActiveObj.tagInfo){
       currentActiveObj.tagInfo = taginfoValue
@@ -202,6 +204,22 @@ const CanvasAnnotator = ({
     // 重新渲染画布
     currentCanvas.renderAll();
   };
+
+  const handleEditClassModalOk = () => {
+    currentActiveObj.set('label', currentEditClass)
+    currentActiveObj.set('color', entityColorMap[currentEditClass])
+    currentActiveObj.set('stroke', entityColorMap[currentEditClass])
+
+    setIsEditClassModalOpen(false)
+
+    // 取消选中所有对象
+    currentCanvas.discardActiveObject();
+    // 设置当前对象为选中状态
+    currentCanvas.setActiveObject(currentActiveObj);
+    // 重新渲染画布
+    currentCanvas.renderAll();
+  }
+
   const handelInfoValueChange = (event) => {
     if(event && event.target && event.target.value){
       let value = event.target.value;
@@ -633,9 +651,14 @@ const CanvasAnnotator = ({
                 <span>{hitShapeTypeLabels[currentActiveObj.shape]}</span>
               </div>
               <div className={styles.ActiveObjCardOperate}>
-                <div className={styles.ActiveObjCardEdit}
+              <div className={styles.ActiveObjCardEdit}
                     title='编辑标注信息'
                     onClick={()=>{setIsTagInfModalOpen(true)}}>
+                      <VIcon type="icon-wenben" style={{ fontSize: '16px' }} />
+                </div>
+                <div className={styles.ActiveObjCardClassEdit}
+                    title='编辑类别'
+                    onClick={()=>{setCurrentEditClass(currentActiveObj.label); setIsEditClassModalOpen(true)}}>
                       <VIcon type="icon-edit" style={{ fontSize: '16px' }} />
                 </div>
                 <div className={styles.ActiveObjCardDelete}
@@ -720,6 +743,39 @@ const CanvasAnnotator = ({
                     maxLength={100} 
                     onChange={handelInfoValueChange}
                     {...(currentActiveObj?.tagInfo ? { defaultValue: currentActiveObj.tagInfo } : {})}/>
+        </Modal>
+        <Modal title="标注类别" 
+              open={isEditClassModalOpen} 
+              onOk={handleEditClassModalOk} 
+              onCancel={()=>{setIsEditClassModalOpen(false)}} 
+              destroyOnClose
+              okText="保存"
+              cancelText="取消">
+              <div className={styles.entityWrap}>
+                {Object.keys(entityColorMap).map((item, index) => {
+                    return (
+                      <div
+                        className={styles.entityItemWrap}
+                        onClick={() => {
+                          setCurrentEditClass(item)
+                        }}
+                        tabIndex={index}
+                        key={item}
+                        id={item}
+                        style={{
+                          backgroundColor: `${currentEditClass === item ? '#25b0e5' : '#56677d'}`,
+                        }}
+                      >
+                        <Tag
+                          color={entityColorMap[item]}
+                          style={{ marginLeft: '5px', marginRight: '5px', lineHeight: '18px', padding: '0 5px' }}
+                        >
+                          {item}
+                        </Tag>
+                      </div>
+                    )
+                })}
+              </div>
         </Modal>
         <div className={styles.statusBar}>
           <Space size={25}>

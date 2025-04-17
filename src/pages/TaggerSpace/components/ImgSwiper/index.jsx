@@ -16,6 +16,7 @@ import SwiperCore, { Pagination, Navigation, Controller } from 'swiper/core'
 import 'swiper/swiper.min.css'
 import 'swiper/components/pagination/pagination.min.css'
 import 'swiper/components/navigation/navigation.min.css'
+import useDidUpdateEffect from '@/hooks/useDidUpdateEffect'
 
 SwiperCore.use([Navigation, Pagination, Controller])
 
@@ -74,6 +75,7 @@ const ImgSwiper = ({ changeSession }) => {
         payload: sortedGroupImages[activeIndex],
       })
       window.sessionStorage.setItem('tagInitImageId', sortedGroupImages[activeIndex].imageId)
+      localStorage.setItem("lastViewImageId", sortedGroupImages[activeIndex].imageId)
     }
     if (changeSession) {
       Modal.confirm({
@@ -86,6 +88,19 @@ const ImgSwiper = ({ changeSession }) => {
       })
     } else _change()
   }
+
+  useDidUpdateEffect(() => {
+    if (swiper && currentImage) {
+      console.log(currentImage.imageId)
+      const selectedIndex = sortedGroupImages.findIndex(v => v.imageId === currentImage.imageId);
+      if (selectedIndex !== -1) {
+        const visibleSlides = Math.floor(swiper.width / swiper.slides[0]?.offsetWidth || 1); // Swiper 视窗内可见的图片数
+        const centerIndex = Math.max(selectedIndex - Math.floor(visibleSlides / 2), 0); // 计算让选中图像居中的 index
+        swiper.slideTo(centerIndex, 300, false); // 平滑滚动
+      }
+    }
+  }, [currentImage]);
+  
 
   return (
     <div style={{ padding: '20px', height: windowHeight }}>
@@ -114,7 +129,7 @@ const ImgSwiper = ({ changeSession }) => {
                     padding: v.imageId === currentImage.imageId ? '4px 4px' : '0',
                   }}
                   key={index}
-                  src={v.imageUrl}
+                  src={v.imageUrl.replace(/(\/[^\/]+)$/, "/thumbnail$1")}
                   className={styles.swiperImg}
               />
               <div

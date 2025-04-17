@@ -13,7 +13,7 @@ import { hexToRgba } from '@/helpers/Utils'
 import { saveAs } from 'file-saver'
 import { imgUploadPre, hitShapeTypes } from '@/constants'
 import { downloadAnnotationByGroup } from '@/request/actions/annotation'
-import { fetchImageSize } from '@/request/actions/image'
+import { fetchImageSize, searchImage } from '@/request/actions/image'
 
 // @ts-ignore
 const fabric = window.fabric
@@ -29,7 +29,7 @@ export const downloadFile = async (type, groupList) => {
   const hitsResult = annotationRes.data
   // 存在服务器uploads文件夹中的标记项
   const resultExists = hasAnnotationResult(hitsResult);
-  if (!resultExists) {
+  if (!resultExists && type!=='URL') {
     Modal.info({
       title: '注意',
       content: '没有完成的标记项，无法下载',
@@ -80,7 +80,33 @@ export const downloadFile = async (type, groupList) => {
         downlaodWithJSON(transformedData)
       }
       break
+    case 'URL':
+      downlaodURLWithJSON(projectDetails.projectId, groupList)
+      break
   }
+}
+
+const downlaodURLWithJSON = async(pId, groupList) => {
+  const allResults = [];
+  for (let i = 0; i < groupList.length; i++) {
+    const result = await searchImage(groupList[i]);
+    const dataRes = result.data.content
+    // 提取dataRes 中的每个数据的 imageUrl，合并为一个列表
+    const imageUrls = dataRes.map(item => `uploads/${pId}/${item.imageName}.png`);
+
+    allResults.push({
+      groupId: groupList[i],
+      imageUrls,
+    });
+  }
+
+  let jsonFileName = "imageUrl.json"  
+  
+  let fileToSave = new Blob([JSON.stringify(allResults, null, 4)], {
+    type: 'application/json',
+  })
+
+  saveAs(fileToSave, jsonFileName)
 }
 
 const downloadMrxsWithJSON = async(finalDownloadHits) => {

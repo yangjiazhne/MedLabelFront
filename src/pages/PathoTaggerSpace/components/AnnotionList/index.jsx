@@ -15,7 +15,8 @@ const AnnotionList = ({changeSession, setShowAnnotionList, setShowTagBox, curren
         annotion, // 图像的所有标注文件
         currentAnnotion,  // 当前标注文件
         currentImage,  // 当前图像
-        pathoImageInfo
+        pathoImageInfo,
+        currentCanvas
        } = useSelector(
         // @ts-ignore
         state => state.project
@@ -59,6 +60,8 @@ const AnnotionList = ({changeSession, setShowAnnotionList, setShowTagBox, curren
             })
             setShowAnnotionList(false)
             setShowTagBox(true)
+            currentCanvas.remove(...currentCanvas.getObjects())
+            currentCanvas.renderAll()
         }
 
         if (changeSession) {
@@ -74,11 +77,12 @@ const AnnotionList = ({changeSession, setShowAnnotionList, setShowTagBox, curren
     }
 
     const changeAnnotion = (annotion) => {
+        console.log(annotion)
         const _change = () => {
             // 更换当前annotion
             dispatch({
                 type: 'UPDATE_CURRENT_ANNOTION',
-                payload: annotion,
+                payload: {...annotion},
             })
 
             // 切换boundingBox

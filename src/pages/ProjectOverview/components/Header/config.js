@@ -20,7 +20,12 @@ export const downLoadItem = [
     {
       key: 'ZIP',
       label: '下载Zip压缩文件',
-      icon: <DeleteOutlined style={{ color: '#ff0000' }}/>,
+      icon: <CodeOutlined style={{ color: 'teal' }} />,
+    },
+    {
+      key: 'URL',
+      label: '下载图像Url地址',
+      icon: <CodeOutlined style={{ color: 'teal' }} />,
     },
   ]
 

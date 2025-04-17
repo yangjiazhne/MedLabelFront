@@ -3,6 +3,68 @@ import { BASE_URL } from '@/constants'
 import { getToken } from '@/helpers/dthelper'
 import { handleError, handleUnauthorized } from '@/helpers/Utils'
 
+
+//上传JSON
+export const uploadJson = data => {
+  const token = getToken()
+
+  return new Promise((resolve, reject) => {
+    superagent
+      .post(BASE_URL + '/annotation/upload/json')
+      .send(data)
+      .set('Authorization', `Bearer ${token}`)
+      .end((err, res) => {
+        if (err){
+          if (res?.status === 401) {
+            handleUnauthorized()
+            return
+          }
+          handleError(res?.body?.code);
+          resolve({
+            err: true,
+            data: res.body.msg,
+          })
+        }
+        else
+          resolve({
+            err: false,
+            data: res.body,
+          })
+      })
+  })
+}
+
+//上传JSON文件夹
+export const uploadJsonFolder = data => {
+  const token = getToken()
+
+  return new Promise((resolve, reject) => {
+    superagent
+      .post(BASE_URL + '/annotation/upload/folder')
+      .send(data)
+      .set('Authorization', `Bearer ${token}`)
+      .end((err, res) => {
+        if (err){
+          if (res?.status === 401) {
+            handleUnauthorized()
+            return
+          }
+          handleError(res?.body?.code);
+          resolve({
+            err: true,
+            data: res.body.msg,
+          })
+        }
+        else
+          resolve({
+            err: false,
+            data: res.body,
+          })
+      })
+  })
+}
+
+
 //新增标注
 export const createAnnotation = data => {
   const token = getToken()

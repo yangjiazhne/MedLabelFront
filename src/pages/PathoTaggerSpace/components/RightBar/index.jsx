@@ -195,6 +195,24 @@ const RightBar = ({ setShowTagBox, space, isDone, saveRow, setUpdateReady, updat
     } 
   }
 
+  const [isEditClassModalOpen, setIsEditClassModalOpen] = useState(false);
+  const [currentEditClass, setCurrentEditClass] = useState('')
+
+  const handleEditClassModalOk = () => {
+    currentActiveObj.set('label', currentEditClass)
+    currentActiveObj.set('color', entityColorMap[currentEditClass])
+    currentActiveObj.set('stroke', entityColorMap[currentEditClass])
+
+    setIsEditClassModalOpen(false)
+
+    // 取消选中所有对象
+    currentCanvas.discardActiveObject();
+    // 设置当前对象为选中状态
+    currentCanvas.setActiveObject(currentActiveObj);
+    // 重新渲染画布
+    currentCanvas.renderAll();
+  }
+
   const [algorithmDesc, setAlgorithmDesc] = useState('')
   const showDrawer = type => {
     setAlgorithmDesc(type)
@@ -651,6 +669,10 @@ const RightBar = ({ setShowTagBox, space, isDone, saveRow, setUpdateReady, updat
                         <span className={styles.taggerWrapItemDelete} onClick={deleteActiveObj}>
                           <VIcon type="icon-shanchu" style={{ fontSize: '16px' }}/>
                         </span>
+                        <span className={styles.taggerWrapItemEdit} onClick={()=>{setCurrentEditClass(currentActiveObj.label); setIsEditClassModalOpen(true)}}>
+                          <VIcon type="icon-edit" style={{ fontSize: '14px', marginRight:'2px' }}/>
+                          编辑类别
+                        </span>
                         <span className={styles.taggerWrapItemText} onClick={()=>{setIsTagInfModalOpen(true)}}>
                           <VIcon type="icon-wenben" style={{ fontSize: '14px', marginRight:'2px' }}/>
                           备注
@@ -674,6 +696,39 @@ const RightBar = ({ setShowTagBox, space, isDone, saveRow, setUpdateReady, updat
                         onChange={handelInfoValueChange}
                         {...(currentActiveObj?.tagInfo ? { defaultValue: currentActiveObj.tagInfo } : {})}/>
             </Modal>
+            <Modal title="标注类别" 
+                open={isEditClassModalOpen} 
+                onOk={handleEditClassModalOk} 
+                onCancel={()=>{setIsEditClassModalOpen(false)}} 
+                destroyOnClose
+                okText="保存"
+                cancelText="取消">
+                <div className={styles.entityWrap2}>
+                  {Object.keys(entityColorMap).map((item, index) => {
+                      return (
+                        <div
+                          className={styles.entityItemWrap2}
+                          onClick={() => {
+                            setCurrentEditClass(item)
+                          }}
+                          tabIndex={index}
+                          key={item}
+                          id={item}
+                          style={{
+                            backgroundColor: `${currentEditClass === item ? '#25b0e5' : '#56677d'}`,
+                          }}
+                        >
+                          <Tag
+                            color={entityColorMap[item]}
+                            style={{ marginLeft: '5px', marginRight: '5px', lineHeight: '18px', padding: '0 5px' }}
+                          >
+                            {item}
+                          </Tag>
+                        </div>
+                      )
+                  })}
+                </div>
+          </Modal>
             <div className={styles.iconBtnWrap}>
               {iconBtns(clearAllObjects, showReDoModal, saveRow, projectHits, space, isDone, setUpdateReady, updateReady).map(
                 (btn, index) => {

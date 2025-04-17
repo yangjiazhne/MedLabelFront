@@ -148,6 +148,8 @@ const TaggerSpaceNew = () => {
 
   const containerRef = useRef(null);  //用于标注框的父容器
 
+  const [projectHitsFetchEnd, setProjectHitsFetchEnd] = useState(false) // 项目标记信息获取完成标记
+
   useEffect(() => {
     if(showSliceList){
       setShowTagBox(false)
@@ -247,7 +249,7 @@ const TaggerSpaceNew = () => {
 
   // 通过单击图像进入标注页面时/保存标注数据后，会携带图像id和组id
   const fetchData = async (currentImageId, currentGroupId) => {
-
+    console.log(currentProjectPid)
     if(currentProjectPid) {
       setLoading(true)
 
@@ -335,6 +337,9 @@ const TaggerSpaceNew = () => {
         })
       }
 
+      localStorage.setItem("lastViewImageId", imageRes.imageId)
+
+      setProjectHitsFetchEnd(true)
       setLoading(false)
 
     }
@@ -565,215 +570,218 @@ const TaggerSpaceNew = () => {
 
   return (
     <Spin spinning={loading}>
-      <div style={{ width: '100%', display: 'flex', overflow:'hidden' }}>
-        <div className={styles.leftContainer}>
-          {currentImage && <ImgSwiper changeSession={changeSession} />}
-        </div>
-        
-        <div className={styles.container} ref={containerRef} style={{height: !currentImage?'700px':'auto'}}>
-          {currentGroupImages.length === 0 && !currentImage && (
-            <Empty
-              style={{ marginTop: '50px' }}
-              description={<h2 className={styles.noItems}> 当前分组暂无数据，请选择数据 </h2>}
-            />
-          )}
-          {currentImage && (
-            <CanvasAnnotator
-              setChangeSession={setChangeSession}
-              space={filterValue.status === 'notDone'}
-              setClassificationModel={setClassificationModel}
-              setSelectedModels={setSelectedModels}
-              setIsCheckedNone={setIsCheckedNone}
-              updateReady={updateReady}
-            />
-          )}
+      {projectHitsFetchEnd && (
+        <div style={{ width: '100%', display: 'flex', overflow:'hidden' }}>
+          <div className={styles.leftContainer}>
+            {currentImage && <ImgSwiper changeSession={changeSession} />}
+          </div>
+          
+          <div className={styles.container} ref={containerRef} style={{height: !currentImage?'700px':'auto'}}>
+            {currentGroupImages.length === 0 && !currentImage && (
+              <Empty
+                style={{ marginTop: '50px' }}
+                description={<h2 className={styles.noItems}> 当前分组暂无数据，请选择数据 </h2>}
+              />
+            )}
+            {currentImage && (
+              <CanvasAnnotator
+                setChangeSession={setChangeSession}
+                space={filterValue.status === 'notDone'}
+                setClassificationModel={setClassificationModel}
+                setSelectedModels={setSelectedModels}
+                setIsCheckedNone={setIsCheckedNone}
+                updateReady={updateReady}
+              />
+            )}
 
-          {currentImage && showTagBox && (
-            <RightBar
-              containerRef={containerRef}
-              setShowTagBox={setShowTagBox}
-              modelName={filterValue.model}
-              space={filterValue.status === 'notDone'}
-              isDone={filterValue.status === 'done'}
-              isCls={projectDetails.task_type === 'IMAGE_CLASSIFICATION'}
-              saveRow={handleChangeHitStatus}
-              setUpdateReady={setUpdateReady}
-              updateReady={updateReady}
-              // saveTagAndNextRow={() => handleNextRow('next')}
-            />
-          )}
-          {showAnnotionList && (
-            <AnnotionList
-              changeSession={changeSession}
-              containerRef={containerRef}
-              setShowAnnotionList={setShowAnnotionList}
-              setShowTagBox={setShowTagBox}
-            />
-          )}
-          {showSliceList && (
-              <SliceList
+            {currentImage && showTagBox && (
+              <RightBar
+                containerRef={containerRef}
+                setShowTagBox={setShowTagBox}
+                modelName={filterValue.model}
+                space={filterValue.status === 'notDone'}
+                isDone={filterValue.status === 'done'}
+                isCls={projectDetails.task_type === 'IMAGE_CLASSIFICATION'}
+                saveRow={handleChangeHitStatus}
+                setUpdateReady={setUpdateReady}
+                updateReady={updateReady}
+                // saveTagAndNextRow={() => handleNextRow('next')}
+              />
+            )}
+            {showAnnotionList && (
+              <AnnotionList
                 changeSession={changeSession}
                 containerRef={containerRef}
-                setShowSliceList={setShowSliceList}
-                setSearchValue={setSearchValue}
-                currentPage={currentPage}
-                setCurrentPage={setCurrentPage}
+                setShowAnnotionList={setShowAnnotionList}
+                setShowTagBox={setShowTagBox}
               />
-          )}
-          {/* 保存标注信息 */}
-          <UpdateDoneModal 
-            open={isUpdateDoneModalOpen}
-            onCreate={async(values) => {
-              const {annotationName, annotatedBy, description} = values
-              const annotationRes = await searchAnnotation(currentImage.imageId)
-              const allAnnotations = annotationRes.data.content
-              const matchedAnnotation = allAnnotations.find(anno => anno.annotationName === annotationName)
+            )}
+            {projectHitsFetchEnd && (
+                <SliceList
+                  changeSession={changeSession}
+                  containerRef={containerRef}
+                  setShowSliceList={setShowSliceList}
+                  setSearchValue={setSearchValue}
+                  currentPage={currentPage}
+                  setCurrentPage={setCurrentPage}
+                  showSliceList={showSliceList}
+                />
+            )}
+            {/* 保存标注信息 */}
+            <UpdateDoneModal 
+              open={isUpdateDoneModalOpen}
+              onCreate={async(values) => {
+                const {annotationName, annotatedBy, description} = values
+                const annotationRes = await searchAnnotation(currentImage.imageId)
+                const allAnnotations = annotationRes.data.content
+                const matchedAnnotation = allAnnotations.find(anno => anno.annotationName === annotationName)
 
-              if((currentAnnotion && matchedAnnotation && matchedAnnotation.length !== 0 && matchedAnnotation.annotationId != currentAnnotion.annotationId)||(!currentAnnotion && matchedAnnotation && matchedAnnotation.length !== 0)){
-                message.error("标注文件名称已存在，请重新命名！")
-                return
-              }
+                if((currentAnnotion && matchedAnnotation && matchedAnnotation.length !== 0 && matchedAnnotation.annotationId != currentAnnotion.annotationId)||(!currentAnnotion && matchedAnnotation && matchedAnnotation.length !== 0)){
+                  message.error("标注文件名称已存在，请重新命名！")
+                  return
+                }
 
-              const result = getCurrentResult(currentCanvas)
-              const entities = customEntities
+                const result = getCurrentResult(currentCanvas)
+                const entities = customEntities
 
-              const annotationResult = {
-                imageId: currentImage.imageId,
-                projectId: projectDetails.projectId,
-                hitResults: result,
-                customCategories: entities
-              }
+                const annotationResult = {
+                  imageId: currentImage.imageId,
+                  projectId: projectDetails.projectId,
+                  hitResults: result,
+                  customCategories: entities
+                }
 
-              const queryData = {
-                annotationName: annotationName,
-                description: description,
-                annotatedBy: annotatedBy,
-                annotationResult: JSON.stringify(annotationResult)
-              }
+                const queryData = {
+                  annotationName: annotationName,
+                  description: description,
+                  annotatedBy: annotatedBy,
+                  annotationResult: JSON.stringify(annotationResult)
+                }
 
-              let res
-              if(currentAnnotion){
-                queryData.annotationId = currentAnnotion.annotationId
-                res = await updateAnnotation([queryData])
-              }else{
-                queryData.imageId = currentImage.imageId
-                res = await createAnnotation([queryData])
-              }
+                let res
+                if(currentAnnotion){
+                  queryData.annotationId = currentAnnotion.annotationId
+                  res = await updateAnnotation([queryData])
+                }else{
+                  queryData.imageId = currentImage.imageId
+                  res = await createAnnotation([queryData])
+                }
 
-              if (!res.err) {
-                message.success('操作成功')
-                localStorage.setItem("lastEditImageId", currentImage.imageId)
-                setChangeSession(false)
-                setIsUpdateDoneModalOpen(false)
-                // 保存数据结果时, 传入当前所在图像的索引值
-                fetchData(currentImage.imageId, currentGroup.imageGroupId)
-                // updateImage(currentImage)
-              } else {
-                message.error(res || '操作失败')
-              }
-            }}
-            onCancel={()=>{setIsUpdateDoneModalOpen(false)}}
-            title={currentAnnotion ? "更新标注文件" : "新增标注文件"}
-            okText={currentAnnotion ? "更新" : "新增"}
-            annotion={currentAnnotion}
-          />
-        </div>
-        <div className={styles.rightContainer}>
-          <Popover
-            content={<div style={{display:'flex'}}>
-              <div onClick={() => {
-                  const projectId = localStorage.getItem('currentProject')
-                  history.push('/userHome/projects/' + projectId)
-                }}
-                title='返回上一页'
-                className={styles.moreListIcon}
-                style={{borderTopLeftRadius: '5px', borderBottomLeftRadius: '5px'}}>
-                <VIcon type="icon-pre" style={{ fontSize: '18px'}}/>
-              </div>
-              <div onClick={() => history.push('/userHome/my-projects')}
-                  title='返回主界面'
-                  className={styles.moreListIcon}>
-                <VIcon type="icon-home" style={{ fontSize: '18px'}}/>
-              </div>
-            </div>}
-            trigger="click"
-            overlayClassName={styles.morePop}
-            open={showMoreList}
-            color="#272b33"
-            placement="left"
-            onOpenChange={(newOpen)=>{setShowMoreList(newOpen)}}
-          >
-            <div className={styles.moreList}>
-              <div onClick={()=>{setShowMoreList(!showMoreList)}} 
-                  title='更多功能' className={styles.moreListButton}
-                  style={{backgroundColor: `${showMoreList ? 'rgba(37, 176, 229, .7)' : '#616161'}`}}>
-                <VIcon type="icon-more" style={{ fontSize: '28px', marginTop:'10px' }}/>
-              </div>
-            </div>
-          </Popover>
-          {currentImage && (
+                if (!res.err) {
+                  message.success('操作成功')
+                  localStorage.setItem("lastEditImageId", currentImage.imageId)
+                  setChangeSession(false)
+                  setIsUpdateDoneModalOpen(false)
+                  // 保存数据结果时, 传入当前所在图像的索引值
+                  fetchData(currentImage.imageId, currentGroup.imageGroupId)
+                  // updateImage(currentImage)
+                } else {
+                  message.error(res || '操作失败')
+                }
+              }}
+              onCancel={()=>{setIsUpdateDoneModalOpen(false)}}
+              title={currentAnnotion ? "更新标注文件" : "新增标注文件"}
+              okText={currentAnnotion ? "更新" : "新增"}
+              annotion={currentAnnotion}
+            />
+          </div>
+          <div className={styles.rightContainer}>
             <Popover
-              content={<div style={{width: '250px', backgroundColor: '#272b33', padding:'10px', color: '#fff'}}>
-                <p><b>标注对象简介 </b></p>
-                <Divider style={{ marginTop: '0', marginBottom: '5px', backgroundColor: '#354052' }} />
-                <p style={{ wordWrap: 'break-word', marginBottom: '4px' }}>
-                  <b>文件名: </b>
-                  {currentImage.imageName}
-                </p>
-                <p style={{ marginBottom: '4px' }}>
-                  <b>图片宽高: </b>
-                  {currentImgSize.width}*{currentImgSize.height}
-                </p>
-                {filterValue['status'] === 'al' && (
-                  <p style={{ marginBottom: '4px' }}>
-                    <b>推理模型：</b>
-                    {filterValue['model']}
-                  </p>
-                )}
+              content={<div style={{display:'flex'}}>
+                <div onClick={() => {
+                    const projectId = localStorage.getItem('currentProject')
+                    history.push('/userHome/projects/' + projectId)
+                  }}
+                  title='返回上一页'
+                  className={styles.moreListIcon}
+                  style={{borderTopLeftRadius: '5px', borderBottomLeftRadius: '5px'}}>
+                  <VIcon type="icon-pre" style={{ fontSize: '18px'}}/>
+                </div>
+                <div onClick={() => history.push('/userHome/my-projects')}
+                    title='返回主界面'
+                    className={styles.moreListIcon}>
+                  <VIcon type="icon-home" style={{ fontSize: '18px'}}/>
+                </div>
               </div>}
               trigger="click"
-              color="#272b33"
               overlayClassName={styles.morePop}
-              open={showSliceInfoBox}
+              open={showMoreList}
+              color="#272b33"
               placement="left"
-              onOpenChange={(newOpen)=>{setShowSliceInfoBox(newOpen)}}
+              onOpenChange={(newOpen)=>{setShowMoreList(newOpen)}}
             >
-              <div className={styles.sliceInfo}>
-                <div onClick={()=>{setShowSliceInfoBox(!showSliceInfoBox)}} 
-                      title='切片信息' className={styles.sliceInfoButton} 
-                    style={{backgroundColor: `${showSliceInfoBox ? 'rgba(37, 176, 229, .7)' : '#616161'}`}}>
-                  <VIcon type="icon-binglixinxi" style={{ fontSize: '28px', marginTop:'10px' }}/>
+              <div className={styles.moreList}>
+                <div onClick={()=>{setShowMoreList(!showMoreList)}} 
+                    title='更多功能' className={styles.moreListButton}
+                    style={{backgroundColor: `${showMoreList ? 'rgba(37, 176, 229, .7)' : '#616161'}`}}>
+                  <VIcon type="icon-more" style={{ fontSize: '28px', marginTop:'10px' }}/>
                 </div>
               </div>
             </Popover>
-          )}
-          <div className={styles.sliceList}>
-            <div onClick={()=>{setShowSliceList(!showSliceList)}} 
-                  title='切片列表' className={styles.sliceListButton}
-                style={{backgroundColor: `${showSliceList ? 'rgba(37, 176, 229, .7)' : '#616161'}`}}>
-              <VIcon type="icon-list" style={{ fontSize: '28px', marginTop:'10px' }}/>
+            {currentImage && (
+              <Popover
+                content={<div style={{width: '250px', backgroundColor: '#272b33', padding:'10px', color: '#fff'}}>
+                  <p><b>标注对象简介 </b></p>
+                  <Divider style={{ marginTop: '0', marginBottom: '5px', backgroundColor: '#354052' }} />
+                  <p style={{ wordWrap: 'break-word', marginBottom: '4px' }}>
+                    <b>文件名: </b>
+                    {currentImage.imageName}
+                  </p>
+                  <p style={{ marginBottom: '4px' }}>
+                    <b>图片宽高: </b>
+                    {currentImgSize.width}*{currentImgSize.height}
+                  </p>
+                  {filterValue['status'] === 'al' && (
+                    <p style={{ marginBottom: '4px' }}>
+                      <b>推理模型：</b>
+                      {filterValue['model']}
+                    </p>
+                  )}
+                </div>}
+                trigger="click"
+                color="#272b33"
+                overlayClassName={styles.morePop}
+                open={showSliceInfoBox}
+                placement="left"
+                onOpenChange={(newOpen)=>{setShowSliceInfoBox(newOpen)}}
+              >
+                <div className={styles.sliceInfo}>
+                  <div onClick={()=>{setShowSliceInfoBox(!showSliceInfoBox)}} 
+                        title='切片信息' className={styles.sliceInfoButton} 
+                      style={{backgroundColor: `${showSliceInfoBox ? 'rgba(37, 176, 229, .7)' : '#616161'}`}}>
+                    <VIcon type="icon-binglixinxi" style={{ fontSize: '28px', marginTop:'10px' }}/>
+                  </div>
+                </div>
+              </Popover>
+            )}
+            <div className={styles.sliceList}>
+              <div onClick={()=>{setShowSliceList(!showSliceList)}} 
+                    title='切片列表' className={styles.sliceListButton}
+                  style={{backgroundColor: `${showSliceList ? 'rgba(37, 176, 229, .7)' : '#616161'}`}}>
+                <VIcon type="icon-list" style={{ fontSize: '28px', marginTop:'10px' }}/>
+              </div>
             </div>
+            {currentImage && (
+              <div className={styles.biaozhu}>
+                <div onClick={()=>{setShowTagBox(!showTagBox)}} 
+                      title='标注' className={styles.biaozhuButton} 
+                    style={{backgroundColor: `${showTagBox ? 'rgba(37, 176, 229, .7)' : '#616161'}`}}>
+                  <VIcon type="icon-biaozhu" style={{ fontSize: '28px', marginTop:'8px' }}/>
+                </div>
+              </div>
+            )}
+            {currentImage && (
+              <div className={styles.annotionList}>
+                <div onClick={()=>{setShowAnnotionList(!showAnnotionList)}} 
+                      title='切换标注文件' className={styles.annotionListButton} 
+                    style={{backgroundColor: `${showAnnotionList ? 'rgba(37, 176, 229, .7)' : '#616161'}`}}>
+                  <VIcon type="icon-folder" style={{ fontSize: '28px', marginTop:'8px' }}/>
+                </div>
+              </div>
+            )}
           </div>
-          {currentImage && (
-            <div className={styles.biaozhu}>
-              <div onClick={()=>{setShowTagBox(!showTagBox)}} 
-                    title='标注' className={styles.biaozhuButton} 
-                  style={{backgroundColor: `${showTagBox ? 'rgba(37, 176, 229, .7)' : '#616161'}`}}>
-                <VIcon type="icon-biaozhu" style={{ fontSize: '28px', marginTop:'8px' }}/>
-              </div>
-            </div>
-          )}
-          {currentImage && (
-            <div className={styles.annotionList}>
-              <div onClick={()=>{setShowAnnotionList(!showAnnotionList)}} 
-                    title='切换标注文件' className={styles.annotionListButton} 
-                  style={{backgroundColor: `${showAnnotionList ? 'rgba(37, 176, 229, .7)' : '#616161'}`}}>
-                <VIcon type="icon-folder" style={{ fontSize: '28px', marginTop:'8px' }}/>
-              </div>
-            </div>
-          )}
         </div>
-      </div>
+      )}
     </Spin>
   )
 }

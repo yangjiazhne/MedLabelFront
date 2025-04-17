@@ -73,12 +73,56 @@
     line-height: 46px;
     text-align: center;
     background-color: rgba(40, 49, 66, .6);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     display: inline-block;
     margin-right: 15px;
     border-radius: 50%;
     cursor: pointer;
     vertical-align: top;
   }
+}
+
+.changeImagePrev{
+  right: 75px;
+  position: absolute;
+  top: 10px;
+  z-index: 5;
+  padding: 5px 10px;
+  user-select: none;
+  color: #fff;
+  text-align: center;
+  background-color: rgba(40, 49, 66, .6);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: inline-block;
+  margin-right: 15px;
+  cursor: pointer;
+  vertical-align: top;
+}
+
+.changeImagePrev:hover {
+  background-color: rgba(109, 128, 153, .6); /* 悬停时背景色 */
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* 悬停时阴影效果 */
+}
+
+.changeImageNext{
+  right: 0;
+  position: absolute;
+  top: 10px;
+  z-index: 5;
+  padding: 5px 10px;
+  user-select: none;
+  color: #fff;
+  text-align: center;
+  background-color: rgba(40, 49, 66, .6);
+  display: inline-block;
+  margin-right: 15px;
+  cursor: pointer;
+  vertical-align: top;
+}
+
+.changeImageNext:hover {
+  background-color: rgba(109, 128, 153, .6); /* 悬停时背景色 */
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* 悬停时阴影效果 */
 }
 
 .morePop{

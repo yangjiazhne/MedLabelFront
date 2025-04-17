@@ -28,6 +28,18 @@ const UpdateDoneModal = ({ open, onCreate, onCancel, title, okText, annotion}) =
   const userDetail = window.sessionStorage.getItem('userDetail');
   const username = userDetail ? JSON.parse(userDetail).username : null;
 
+  console.log(annotion)
+
+  useEffect(() => {
+    if (open) { // 只在 modal 打开时更新表单值
+      form.setFieldsValue({
+        annotationName: annotion?.annotationName || 'annotion',
+        annotatedBy: annotion?.annotatedBy || username,
+        description: annotion?.description || '',
+      });
+    }
+  }, [open])
+
   return (
     <Modal
       open={open}
@@ -229,6 +241,8 @@ const PathoTaggerSpace = () => {
         payload: { ...imageRes }
       })
 
+      localStorage.setItem("lastViewImageId", imageRes.imageId)
+
       //获取病理图信息
       try{
         const pathoImageInfo = await fetchImageTileInfo(projectId,imageRes.imageName)
@@ -272,6 +286,8 @@ const PathoTaggerSpace = () => {
       type: 'UPDATE_CURRENT_IMAGE',
       payload: {...image},
     })
+
+    localStorage.setItem("lastViewImageId", image.imageId)
 
     const _image = currentGroupImages.find(p => p.imageId === currentImage.imageId);
     if (_image) {
@@ -612,6 +628,110 @@ const PathoTaggerSpace = () => {
     // }
   }
 
+
+  const changeImage = async (image) => {
+
+    const _change = async() => {
+        dispatch({
+            type: 'UPDATE_CURRENT_IMAGE',
+            payload: {...image},
+        })
+
+        window.sessionStorage.setItem('tagInitGroupId', image.imageGroup.imageGroupId)
+        window.sessionStorage.setItem('tagInitImageId', image.imageId)
+        localStorage.setItem("lastViewImageId", image.imageId)
+
+        //获取病理图信息
+        try{
+            const pathoImageInfo = await fetchImageTileInfo(projectId,image.imageName)
+            dispatch({
+                type: 'UPDATE_PATHOIMGINFO',
+                payload: pathoImageInfo,
+            })
+        }catch (error) {
+            dispatch({
+                type: 'UPDATE_PATHOIMGINFO',
+                payload: {
+                    url: '',
+                    overlap: '',
+                    tileSize: '',
+                    format: '',
+                    size: {
+                    width: 0,
+                    height: 0,
+                    },
+                }
+            })
+        }
+    }
+
+    if (changeSession) {
+      Modal.confirm({
+          title: 'Confirm',
+          icon: <ExclamationCircleOutlined />,
+          content: '当前画布还有标注信息未保存，确定继续操作吗？',
+          okText: '确认',
+          cancelText: '取消',
+          onOk: _change,
+      })
+    } else _change()
+  
+  }
+
+  const switchImage = async order => {
+    if(!currentImage){
+      message.error("当前组内没有任何图像！")
+      return
+    }
+    console.log(order)
+    const exists = currentGroupImages.some(image => image.imageId === currentImage.imageId);
+
+    if(exists){
+      const index = currentGroupImages.findIndex(image => image.imageId === currentImage.imageId);
+
+      if(order == -1){
+        //切换到上一张
+        if (index === 0) {
+          message.warning("已经是当前分组内第一张！");
+        } else {
+          changeImage(currentGroupImages[index - 1]);
+        }
+      }else if(order == 1){
+        //切换到下一张
+        if (index === currentGroupImages.length - 1) {
+          message.warning("已经是当前分组内最后一张！");
+        } else {
+          changeImage(currentGroupImages[index + 1]);
+        }
+      }
+
+    }else{
+      const imageGroupId = currentImage.imageGroup.imageGroupId
+
+      const res = await searchImage(imageGroupId)
+
+      const groupimages = res.data.content
+
+      const index = groupimages.findIndex(image => image.imageId === currentImage.imageId);
+      
+      if(order == -1){
+        //切换到上一张
+        if (index === 0) {
+          message.warning("已经是当前分组内第一张！");
+        } else {
+          changeImage(groupimages[index - 1]);
+        }
+      }else if(order == 1){
+        //切换到下一张
+        if (index === currentGroupImages.length - 1) {
+          message.warning("已经是当前分组内最后一张！");
+        } else {
+          changeImage(groupimages[index + 1]);
+        }
+      }
+    }
+  }
+
   // useEffect(() => {
   //   if (projectHits && projectHits.length > 0) {
   //     getInferRes()
@@ -680,7 +800,7 @@ const PathoTaggerSpace = () => {
               updateReady={updateReady}
               // setIsEdit={setIsEdit}
             />}
-          {showSliceList && (
+          {true && (
             <SliceList
               changeSession={changeSession}
               setShowSliceList={setShowSliceList}
@@ -688,6 +808,7 @@ const PathoTaggerSpace = () => {
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
               setCurrentPageSize={setCurrentPageSize}
+              showSliceList={showSliceList}
             />
           )}
           {showAnnotionList && (
@@ -741,8 +862,31 @@ const PathoTaggerSpace = () => {
                 message.success('操作成功')
                 localStorage.setItem("lastEditImageId", currentImage.imageId)
                 setChangeSession(false)
-                // 保存数据结果时, 传入当前所在图像的索引值
-                // fetchData(currentImage.imageId, currentGroup.imageGroupId)
+
+                if(!currentAnnotion){
+                  for (let i = 0; i < currentGroupImages.length; i++) {
+                    if (currentGroupImages[i].imageId === currentImage.imageId) {
+                      currentGroupImages[i].status = 4;
+                      break;  // 找到并修改后可以退出循环
+                    }
+                  }
+                }
+
+                // 如果是新增
+                if(!currentAnnotion){
+                  const annotionRes = await searchAnnotation(currentImage.imageId)
+
+                  dispatch({
+                    type: 'UPDATE_ANNOTION',
+                    payload: annotionRes.data.content
+                  })
+                  dispatch({
+                    type: 'UPDATE_CURRENT_ANNOTION',
+                    payload: {...annotionRes.data.content[annotionRes.data.content.length - 1]},
+                  })
+                  
+                }
+                
               } else {
                 message.error(res || '操作失败')
               }
@@ -884,6 +1028,15 @@ const PathoTaggerSpace = () => {
               <VIcon type="icon-list" style={{ fontSize: '28px', marginTop:'10px' }}/>
             </div>
           </div>
+
+          <div className={styles.changeImagePrev} onClick={() => switchImage(-1)}>
+            上一张
+          </div>
+
+          <div className={styles.changeImageNext} onClick={() => switchImage(1)}>
+            下一张
+          </div>
+
           <Popover
             content={<div style={{display:'flex'}}>
               <div onClick={() => {

@@ -99,6 +99,7 @@ const Header = () => {
   const [downloadGroup, setDownloadGroup] = useState([])
   const [downJsonModalOpen, setDownJsonModalOpen] = useState(false)
   const [downZipModalOpen, setDownZipModalOpen] = useState(false)  
+  const [downUrlModalOpen, setDownUrlModalOpen] = useState(false)  
 
   // const startTagging = () => {
   //   if (projectDetails.status === 'INVALID') {
@@ -139,6 +140,9 @@ const Header = () => {
     }
     if(key === 'ZIP'){
       setDownZipModalOpen(true)
+    }
+    if(key === 'URL'){
+      setDownUrlModalOpen(true)
     }
   };
 
@@ -183,6 +187,15 @@ const Header = () => {
         okText={"下载"}
         projectGroups={downloadGroup}
         downType={'ZIP'}
+      />
+      <DownloadDataModal
+        open={downUrlModalOpen}
+        onOk={()=>{setDownUrlModalOpen(false)}}
+        onCancel={()=>{setDownUrlModalOpen(false)}}
+        title={"下载图像Url"}
+        okText={"下载"}
+        projectGroups={downloadGroup}
+        downType={'URL'}
       />
     </div>
   )

@@ -197,6 +197,9 @@
               .taggerWrapItemDelete:hover {
                 background-color: #56677d; /* 悬浮时的背景色 */
               }
+              .taggerWrapItemEdit:hover {
+                background-color: #56677d; /* 悬浮时的背景色 */
+              }
               .taggerWrapItemText:hover {
                 background-color: #56677d; /* 悬浮时的背景色 */
               }
@@ -242,5 +245,27 @@
   .notice {
     margin-bottom: 20px;
     font-size: 14px;
+  }
+}
+
+
+.entityWrap2 {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  overflow: auto;
+  max-height: 100px;
+  .entityItemWrap2 {
+    font-size: 12px;
+    cursor: pointer;
+    margin: 5px 1px;
+    padding: 6px;
+    align-items: center;
+    display: flex;
+    justify-content: space-around;
+    box-shadow: #56677d;
+    &:hover {
+      background-color: #6c809a !important;
+    }
   }
 }
